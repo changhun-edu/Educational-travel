@@ -3,397 +3,369 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>교외체험학습 신청 도우미</title>
-<meta name="description" content="학교(원)장 허가 교외체험학습 신청 기한과 사유를 확인하는 학부모용 도우미">
+<title>체험학습 신청, 언제까지?</title>
+<meta name="description" content="학교(원)장 허가 교외체험학습 신청 기한을 달력에서 바로 확인합니다">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 :root{
   --paper:#EDF1EE;
   --card:#FFFFFF;
   --ink:#16211C;
-  --ink-2:#48574F;
+  --ink-2:#4A5852;
   --ink-3:#7E8C85;
-  --line:#D9E0DB;
+  --off:#B6BFB9;
+  --line:#DBE1DD;
   --pine:#1B5E4B;
-  --pine-soft:#E3EDE8;
+  --pine-soft:#E4EDE9;
   --clay:#A83232;
-  --clay-soft:#F8EAE8;
-  --amber:#9A5B12;
-  --amber-soft:#FAF0DF;
-  --r:14px;
-  --sans:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
-  --serif:'Gowun Batang','Nanum Myeongjo',serif;
+  --clay-soft:#F9ECEA;
+  --sans:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  --serif:'Gowun Batang','Nanum Myeongjo','Apple SD Gothic Neo',serif;
+  --bar:78px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
 body{
   background:var(--paper);color:var(--ink);font-family:var(--sans);
   font-size:16px;line-height:1.6;letter-spacing:-.01em;
-  -webkit-font-smoothing:antialiased;
-  font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;
 }
-.wrap{max-width:480px;margin:0 auto;padding:0 18px calc(28px + env(safe-area-inset-bottom))}
+.wrap{max-width:480px;margin:0 auto;padding:0 18px}
+.pad-bottom{height:calc(var(--bar) + 24px + env(safe-area-inset-bottom))}
 
 /* ---------- header ---------- */
-.top{padding:26px 0 18px}
-.eyebrow{font-size:12px;letter-spacing:.14em;color:var(--ink-3);margin:0 0 6px}
-.top h1{font-family:var(--serif);font-weight:700;font-size:25px;line-height:1.3;margin:0;letter-spacing:-.02em}
-.top .sub{font-size:13px;color:var(--ink-2);margin:8px 0 0}
-.rule{height:1px;background:var(--line);margin:16px 0 0}
-
-/* ---------- progress ---------- */
-.track{display:flex;gap:5px;margin:18px 0 22px}
-.track i{flex:1;height:3px;border-radius:2px;background:var(--line);transition:background .25s}
-.track i.on{background:var(--pine)}
-
-/* ---------- shared ---------- */
-.step{display:none;animation:rise .28s ease both}
-.step.on{display:block}
-@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@media(prefers-reduced-motion:reduce){.step{animation:none}}
-h2.q{font-family:var(--serif);font-weight:700;font-size:21px;line-height:1.4;margin:0 0 6px;letter-spacing:-.02em}
-p.hint{font-size:13.5px;color:var(--ink-2);margin:0 0 18px;line-height:1.6}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
-.card + .card{margin-top:10px}
-label.fl{display:block;font-size:13px;color:var(--ink-2);margin:0 0 6px;font-weight:500}
-input[type=text],input[type=number],input[type=date],textarea,select{
-  width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--card);
-  border:1px solid var(--line);border-radius:10px;padding:11px 12px;min-height:46px;
-}
-textarea{min-height:84px;resize:vertical;line-height:1.6}
-input:focus,textarea:focus,select:focus{outline:2px solid var(--pine);outline-offset:1px;border-color:transparent}
-.btn{
-  display:block;width:100%;font:inherit;font-size:16px;font-weight:600;
-  background:var(--pine);color:#fff;border:none;border-radius:12px;
-  padding:15px;min-height:52px;cursor:pointer;letter-spacing:-.01em;
-}
-.btn:active{transform:scale(.99)}
-.btn[disabled]{background:#B7C4BD;cursor:not-allowed}
-.btn.ghost{background:transparent;color:var(--ink-2);border:1px solid var(--line)}
-.btn.small{font-size:14px;padding:11px;min-height:44px;font-weight:500}
-.row{display:flex;gap:8px;margin-top:14px}
-.row .btn{flex:1}
-.row .btn.wide{flex:2}
-a.txt{color:var(--pine);text-decoration:underline;text-underline-offset:3px}
-
-/* ---------- choice list ---------- */
-.choice{
-  display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;
-  background:var(--card);border:1px solid var(--line);border-radius:12px;
-  padding:14px 15px;margin-bottom:8px;font:inherit;cursor:pointer;color:var(--ink);
-}
-.choice:active{background:#F6F8F7}
-.choice.sel{border-color:var(--pine);box-shadow:inset 0 0 0 1px var(--pine);background:var(--pine-soft)}
-.choice .dot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--line);margin-top:8px}
-.choice.sel .dot{background:var(--pine)}
-.choice .t{display:block;font-size:15.5px;font-weight:500;line-height:1.45}
-.choice .d{display:block;font-size:12.5px;color:var(--ink-3);margin-top:2px;line-height:1.5}
-.choice.no{opacity:.72}
-.choice.no.sel{border-color:var(--clay);box-shadow:inset 0 0 0 1px var(--clay);background:var(--clay-soft);opacity:1}
-.choice.no.sel .dot{background:var(--clay)}
-.grouplabel{font-size:12px;letter-spacing:.1em;color:var(--ink-3);margin:20px 0 8px}
-
-/* ---------- chips ---------- */
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.chip{display:inline-flex;align-items:center;gap:6px;background:var(--pine-soft);color:var(--pine);
-  border-radius:999px;padding:6px 10px 6px 12px;font-size:13px;font-weight:500}
-.chip button{background:none;border:none;color:var(--pine);font-size:16px;line-height:1;cursor:pointer;padding:0 2px}
+header{padding:28px 0 14px}
+header p.kicker{font-size:12px;letter-spacing:.14em;color:var(--ink-3);margin:0 0 8px}
+header h1{font-family:var(--serif);font-weight:700;font-size:26px;line-height:1.35;margin:0;letter-spacing:-.02em}
+header p.lede{font-size:14px;color:var(--ink-2);margin:10px 0 0}
 
 /* ---------- calendar ---------- */
-.cal{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 12px 16px}
-.calhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.calhead b{font-family:var(--serif);font-size:17px;font-weight:700}
-.nav{background:none;border:1px solid var(--line);border-radius:9px;width:38px;height:38px;
-  font-size:17px;color:var(--ink-2);cursor:pointer;line-height:1}
-.nav[disabled]{opacity:.3;cursor:not-allowed}
-.dow{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:var(--ink-3);margin-bottom:2px}
-.dow span:first-child{color:var(--clay)}
+.dowbar{
+  position:sticky;top:0;z-index:5;background:var(--paper);
+  display:grid;grid-template-columns:repeat(7,1fr);text-align:center;
+  font-size:11px;color:var(--ink-3);padding:10px 0 8px;
+  border-bottom:1px solid var(--line);
+}
+.mon{padding:22px 0 6px}
+.mon b{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--ink-2)}
 .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.cell{position:relative;height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  border:none;background:none;font:inherit;font-size:15px;color:var(--ink);border-radius:10px;cursor:pointer;padding:0}
-.cell.pad{visibility:hidden}
-.cell .tag{font-size:9px;line-height:1;margin-top:2px;letter-spacing:-.03em}
-.cell.holiday{color:var(--clay)}
-.cell.holiday .tag{color:var(--clay)}
-.cell.weekend{color:var(--ink-3)}
-.cell.closure{color:var(--amber);background:var(--amber-soft)}
-.cell.closure .tag{color:var(--amber)}
-.cell.vacation{color:var(--ink-3);background:#F1F3F1}
-.cell.vacation .tag{color:var(--ink-3)}
-.cell.past{opacity:.35}
-.cell.inrange{background:var(--pine-soft);border-radius:0}
-.cell.pick{background:var(--pine);color:#fff;border-radius:10px;font-weight:600}
-.cell.pick .tag{color:#DCEAE3}
-.cell.pick.a{border-radius:10px 0 0 10px}
-.cell.pick.b{border-radius:0 10px 10px 0}
-.cell.pick.solo{border-radius:10px}
-.circle{position:absolute;inset:-1px;pointer-events:none}
-.circle ellipse{fill:none;stroke:var(--clay);stroke-width:2;stroke-linecap:round;
-  stroke-dasharray:130;stroke-dashoffset:130;animation:draw .55s ease .1s forwards}
+.d{
+  position:relative;height:48px;min-height:44px;border:none;background:none;
+  font:inherit;font-size:15.5px;color:var(--ink);border-radius:11px;
+  cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
+}
+.d.pad{visibility:hidden;pointer-events:none}
+.d.off{color:var(--off)}
+.d.today::after{
+  content:"";position:absolute;bottom:7px;left:50%;transform:translateX(-50%);
+  width:4px;height:4px;border-radius:50%;background:var(--ink-3);
+}
+.d.rng{background:var(--pine-soft);border-radius:0}
+.d.sel{background:var(--pine);color:#fff;font-weight:600;border-radius:11px}
+.d.sel.a{border-radius:11px 0 0 11px}
+.d.sel.b{border-radius:0 11px 11px 0}
+.d.sel.today::after{background:rgba(255,255,255,.7)}
+.d.rng.today::after{background:var(--pine)}
+.ring{position:absolute;inset:-2px;pointer-events:none;overflow:visible}
+.ring ellipse{
+  fill:none;stroke:var(--clay);stroke-width:2;stroke-linecap:round;
+  stroke-dasharray:135;stroke-dashoffset:135;animation:draw .5s ease .05s forwards;
+}
 @keyframes draw{to{stroke-dashoffset:0}}
-@media(prefers-reduced-motion:reduce){.circle ellipse{animation:none;stroke-dashoffset:0}}
-.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;font-size:11.5px;color:var(--ink-2)}
-.legend s{width:9px;height:9px;border-radius:3px;display:inline-block;vertical-align:-1px;margin-right:5px}
-.picked{margin-top:12px;font-size:14px;color:var(--ink-2);text-align:center;min-height:22px}
-.picked b{color:var(--ink)}
+@media(prefers-reduced-motion:reduce){.ring ellipse{animation:none;stroke-dashoffset:0}}
 
-/* ---------- verdict ---------- */
-.verdict{border-radius:var(--r);padding:18px;margin-bottom:12px;border:1px solid}
-.verdict.ok{background:var(--pine-soft);border-color:#BFD6CB}
-.verdict.warn{background:var(--amber-soft);border-color:#EBD7AF}
-.verdict.stop{background:var(--clay-soft);border-color:#EBC9C5}
-.verdict .lab{font-size:12.5px;font-weight:600;letter-spacing:.02em;margin:0 0 6px}
-.verdict.ok .lab{color:var(--pine)} .verdict.warn .lab{color:var(--amber)} .verdict.stop .lab{color:var(--clay)}
-.verdict h3{font-family:var(--serif);font-size:23px;font-weight:700;margin:0;line-height:1.35;letter-spacing:-.02em}
-.verdict p{font-size:13.5px;color:var(--ink-2);margin:8px 0 0;line-height:1.65}
-.facts{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
-.fact{display:flex;justify-content:space-between;gap:14px;padding:13px 16px;font-size:14.5px}
-.fact + .fact{border-top:1px solid var(--line)}
-.fact .k{color:var(--ink-2);flex:none}
-.fact .v{text-align:right;font-weight:500}
-.fact .v small{display:block;font-weight:400;font-size:12px;color:var(--ink-3);margin-top:2px}
-.note{border-left:3px solid var(--line);padding:2px 0 2px 12px;margin:12px 0;font-size:13.5px;color:var(--ink-2);line-height:1.65}
-.note.attn{border-color:var(--amber)}
-.note.bad{border-color:var(--clay)}
-.note b{color:var(--ink);font-weight:600}
-.src{font-size:11.5px;color:var(--ink-3);margin-top:4px}
-.disclaim{font-size:12px;color:var(--ink-3);line-height:1.65;margin:22px 0 0;padding-top:16px;border-top:1px solid var(--line)}
-.foot{text-align:center;margin-top:20px}
-.foot button{background:none;border:none;color:var(--ink-3);font:inherit;font-size:12px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+/* ---------- bottom bar ---------- */
+#bar{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(10px);
+  border-top:1px solid var(--line);
+  padding:12px 18px calc(12px + env(safe-area-inset-bottom));
+}
+#bar .inner{max-width:480px;margin:0 auto;display:flex;align-items:center;gap:12px;min-height:52px}
+#bar .msg{flex:1;font-size:14px;color:var(--ink-2);line-height:1.45}
+#bar .msg b{display:block;font-size:19px;color:var(--ink);font-weight:600;letter-spacing:-.02em}
+#bar .msg b.late{color:var(--clay)}
+#bar button{
+  flex:none;font:inherit;font-size:15px;font-weight:600;background:var(--pine);color:#fff;
+  border:none;border-radius:12px;padding:14px 18px;min-height:50px;cursor:pointer;
+}
+#bar button[hidden]{display:none}
 
-/* ---------- toast ---------- */
-#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--ink);color:#fff;
-  font-size:13.5px;padding:11px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:.22s;z-index:9;max-width:88vw;text-align:center}
+/* ---------- result ---------- */
+#out{display:none;padding-top:8px}
+#out.on{display:block}
+.hr{height:1px;background:var(--line);margin:26px 0 0}
+h2.sec{font-family:var(--serif);font-size:20px;font-weight:700;margin:26px 0 12px;letter-spacing:-.02em}
+.answer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.answer .lab{font-size:12.5px;color:var(--ink-3);margin:0 0 4px}
+.answer .big{font-family:var(--serif);font-size:27px;font-weight:700;margin:0;line-height:1.3;letter-spacing:-.02em}
+.answer .big.late{color:var(--clay)}
+.answer .sub{font-size:13.5px;color:var(--ink-2);margin:8px 0 0;line-height:1.6}
+.answer .split{display:flex;gap:20px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.answer .split div{flex:1}
+.answer .split .k{font-size:12px;color:var(--ink-3);margin:0}
+.answer .split .v{font-size:15.5px;font-weight:600;margin:2px 0 0}
+
+.prompt{
+  background:var(--card);border:1px solid var(--pine);border-radius:16px;
+  padding:18px 20px;margin-top:10px;
+}
+.prompt p.t{font-size:15.5px;font-weight:600;margin:0 0 4px}
+.prompt p.d{font-size:13.5px;color:var(--ink-2);margin:0 0 14px;line-height:1.6}
+
+.warn{border-left:3px solid var(--clay);background:var(--clay-soft);border-radius:0 10px 10px 0;
+  padding:13px 15px;margin-top:10px;font-size:13.5px;color:var(--ink-2);line-height:1.65}
+.warn b{color:var(--ink);font-weight:600}
+
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-top:10px;overflow:hidden}
+summary{padding:15px 18px;font-size:14.5px;font-weight:500;cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"＋";float:right;color:var(--ink-3);font-weight:400}
+details[open] summary::after{content:"－"}
+details .body{padding:0 18px 16px;font-size:13.5px;color:var(--ink-2);line-height:1.7}
+details .body p{margin:0 0 10px}
+details .body p:last-child{margin:0}
+details .body b{color:var(--ink);font-weight:600}
+
+/* ---------- form controls ---------- */
+label.fl{display:block;font-size:13px;color:var(--ink-2);margin:0 0 6px;font-weight:500}
+input[type=text],input[type=number],input[type=date],textarea{
+  width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--card);
+  border:1px solid var(--line);border-radius:11px;padding:12px;min-height:48px;
+}
+textarea{min-height:80px;resize:vertical;line-height:1.6}
+input:focus,textarea:focus,summary:focus-visible,.d:focus-visible,button:focus-visible{
+  outline:2px solid var(--pine);outline-offset:2px;
+}
+.btn{display:block;width:100%;font:inherit;font-size:15.5px;font-weight:600;background:var(--pine);
+  color:#fff;border:none;border-radius:12px;padding:15px;min-height:52px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink-2);border:1px solid var(--line);font-weight:500}
+.btn.link{background:transparent;color:var(--pine);border:none;font-size:14px;padding:10px;min-height:44px;text-decoration:underline;text-underline-offset:3px}
+.two{display:flex;gap:8px;margin-top:10px}
+.two > *{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--pine-soft);color:var(--pine);
+  border-radius:999px;padding:7px 8px 7px 13px;font-size:13px;font-weight:500}
+.chip button{background:none;border:none;color:var(--pine);font-size:17px;line-height:1;cursor:pointer;padding:0 6px;min-height:28px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card + .card{margin-top:10px}
+
+/* ---------- reason ---------- */
+.banner{background:#FBF3E3;border:1px solid #E7D3A8;border-radius:12px;padding:13px 15px;
+  margin:0 0 6px;font-size:13.5px;color:#6E4E12;line-height:1.6}
+.banner b{font-weight:600}
+.qrow{margin-bottom:14px}
+.qrow:last-of-type{margin-bottom:0}
+.qrow p.q{font-size:14px;color:var(--ink-2);margin:0 0 8px;font-weight:500}
+.opts{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.opt{font:inherit;font-size:14px;background:var(--card);border:1px solid var(--line);
+  border-radius:999px;padding:10px 15px;min-height:44px;cursor:pointer;color:var(--ink)}
+.opt.on{background:var(--pine);border-color:var(--pine);color:#fff;font-weight:500}
+.verdict{border-radius:12px;padding:14px 16px;margin-top:12px;font-size:14px;line-height:1.6}
+.verdict.ok{background:var(--pine-soft);color:var(--pine)}
+.verdict.no{background:var(--clay-soft);color:var(--clay)}
+.verdict b{font-weight:600}
+.src{font-size:11.5px;color:var(--ink-3);line-height:1.6;margin:10px 0 0}
+.foot{padding:26px 0 40px;text-align:center}
+.foot p{font-size:11.5px;color:var(--ink-3);line-height:1.7;margin:0}
+
+#toast{position:fixed;left:50%;bottom:calc(var(--bar) + 26px + env(safe-area-inset-bottom));
+  transform:translate(-50%,10px);background:var(--ink);color:#fff;font-size:13.5px;
+  padding:11px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:.2s;z-index:30;
+  max-width:86vw;text-align:center}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 
-/* ---------- print form ---------- */
 #print{display:none}
 @media print{
   body{background:#fff}
-  .wrap{display:none}
-  #print{display:block;font-size:12px;color:#000}
-  #print h2{font-family:var(--serif);text-align:center;font-size:17px;margin:0 0 4px}
-  #print .meta{text-align:center;font-size:11px;color:#444;margin:0 0 14px}
+  .wrap,#bar,#toast{display:none}
+  #print{display:block;font-size:12px;color:#000;padding:16px}
+  #print h2{font-family:var(--serif);text-align:center;font-size:17px;margin:0 0 14px}
   #print table{width:100%;border-collapse:collapse}
   #print th,#print td{border:1px solid #333;padding:6px 8px;font-size:12px;text-align:left;vertical-align:top}
-  #print th{background:#F0F0F0;width:26%;font-weight:600}
+  #print th{background:#F0F0F0;width:26%}
   #print .tall td{height:80px}
+  #print .note{margin-top:12px;font-size:10.5px;line-height:1.6;border:1px solid #999;padding:8px}
   #print .sign{margin-top:18px;text-align:right;line-height:2.2}
-  #print .warn{margin-top:12px;font-size:10.5px;line-height:1.6;border:1px solid #999;padding:8px}
 }
 </style>
 </head>
 <body>
 
-<div class="wrap">
-  <header class="top">
-    <p class="eyebrow" id="schoolTag">학교(원)장 허가</p>
-    <h1>교외체험학습<br>신청 도우미</h1>
-    <p class="sub">언제까지 신청서를 내야 하는지, 이 사유로 갈 수 있는지 확인해 드립니다.</p>
-    <div class="rule"></div>
+<div class="wrap" id="app">
+  <header>
+    <p class="kicker" id="kicker">학교(원)장 허가 교외체험학습</p>
+    <h1>체험학습,<br>언제까지 신청해야 할까요?</h1>
+    <p class="lede">다녀올 날을 달력에서 고르면 신청 기한을 알려드립니다.</p>
   </header>
 
-  <div class="track" id="track"><i></i><i></i><i></i><i></i></div>
+  <div id="banner"></div>
 
-  <!-- ============ 0. 학사일정 ============ -->
-  <section class="step" id="s0">
-    <h2 class="q">먼저 학사일정을 알려주세요</h2>
-    <p class="hint">신청 기한은 토·일·공휴일뿐 아니라 <b>방학과 재량휴업일도 빼고</b> 셉니다. 학교마다 날짜가 달라서 한 번만 입력해 주시면 됩니다.</p>
+  <div class="dowbar"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+  <div id="cal"></div>
 
+  <div id="out">
+    <div class="hr"></div>
+    <h2 class="sec">신청 기한</h2>
+    <div id="answer"></div>
+    <div id="notes"></div>
+
+    <div id="half"></div>
+
+    <h2 class="sec">이 사유로 갈 수 있나요?</h2>
+    <div class="opts" id="opts"></div>
     <div class="card">
-      <label class="fl">방학 기간</label>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input type="date" id="vs" aria-label="방학 시작일">
-        <span style="color:var(--ink-3)">~</span>
-        <input type="date" id="ve" aria-label="방학 종료일">
+      <label class="fl" for="detail">어떤 일로 다녀오시나요? <span style="color:var(--ink-3);font-weight:400">(선택)</span></label>
+      <textarea id="detail" placeholder="예: 조부모님 칠순으로 친척 댁 방문"></textarea>
+    </div>
+    <div id="verdict"></div>
+    <details>
+      <summary>허가되지 않는 사유</summary>
+      <div class="body">
+        <p>다음은 교외체험학습으로 인정되지 않고 <b>미인정 결석</b>으로 처리됩니다.</p>
+        <p>학원 수강(예술·체육계 포함) · 해외 어학연수 · 시험 준비나 자율학습을 위한 스터디카페·독서실 이용 · 노래나 경연 등 각종 대회 개인 참가 · 대가를 받는 시간제 노동 · 학칙에서 정한 기간을 넘긴 결석 · 허가받은 기간을 넘긴 결석</p>
       </div>
-      <button class="btn ghost small" style="margin-top:8px" id="addVac">방학 추가</button>
-      <div class="chips" id="vacChips"></div>
-    </div>
+    </details>
 
-    <div class="card">
-      <label class="fl">재량휴업일</label>
-      <div style="display:flex;gap:8px">
-        <input type="date" id="cd" aria-label="재량휴업일">
-        <button class="btn ghost small" style="width:auto;padding:11px 16px;flex:none" id="addClo">추가</button>
+    <h2 class="sec">신청하기</h2>
+    <button class="btn" id="sms">담임 선생님께 문자 보내기</button>
+    <div class="two">
+      <button class="btn ghost" id="print-btn">신청서 인쇄</button>
+      <button class="btn ghost" id="share">결과 링크 복사</button>
+    </div>
+    <button class="btn link" id="reset">날짜 다시 고르기</button>
+
+    <details style="margin-top:20px">
+      <summary>꼭 알아두세요</summary>
+      <div class="body">
+        <p>신청서를 냈다고 허가된 것이 아닙니다. <b>담임 선생님의 허가서나 문자를 받은 뒤</b> 다녀오세요. 사전 허가 없이 다녀온 경우는 미인정 결석으로 처리되는 것이 원칙입니다.</p>
+        <p>교외체험학습에는 <b>보호자가 동행</b>해야 합니다. 어려우면 인솔 책임을 질 수 있는 성인을 위임인으로 적어주세요. 위임장은 따로 내지 않고 신청서로 대신합니다.</p>
+        <p>돌아온 뒤에는 <b>결과보고서</b>를 내야 출석으로 인정됩니다. 내용이 불충분하면 출석으로 인정되지 않을 수 있습니다.</p>
+        <p>국외로 나가는 경우, 방학 앞뒤라면 학교에서 출입국사실증명서·항공권 같은 증빙자료를 요청할 수 있습니다.</p>
       </div>
-      <div class="chips" id="cloChips"></div>
+    </details>
+
+    <div class="foot">
+      <p>계산 결과는 참고용입니다. 허가 여부와 출석 인정은 학교(원)장의 결재로 정해지며,<br>신청 기한은 학교 규정에 따라 다를 수 있습니다.</p>
     </div>
+  </div>
 
-    <div class="card">
-      <label class="fl">연간 출석인정 일수 <span style="color:var(--ink-3);font-weight:400">(학칙, 모르면 비워두세요)</span></label>
-      <input type="number" id="annual" min="1" max="60" inputmode="numeric" placeholder="예: 20">
-      <label class="fl" style="margin-top:14px">이미 사용한 일수</label>
-      <input type="number" id="used" min="0" max="60" inputmode="numeric" placeholder="예: 3">
-    </div>
-
-    <div class="row">
-      <button class="btn ghost" id="skipCal">잘 몰라요</button>
-      <button class="btn wide" id="go1">다음</button>
-    </div>
-    <p class="src">‘잘 몰라요’를 누르면 토·일·공휴일만 반영해 계산합니다. 방학·재량휴업일이 끼어 있으면 결과가 달라질 수 있어요.</p>
-  </section>
-
-  <!-- ============ 1. 사유 ============ -->
-  <section class="step" id="s1">
-    <h2 class="q">어떤 일로 다녀오시나요?</h2>
-    <p class="hint">신청서를 냈다고 모두 허가되지는 않습니다. 학교(원)장이 사유를 검토한 뒤 결정합니다.</p>
-    <div id="reasonList"></div>
-
-    <div class="card" style="margin-top:16px">
-      <label class="fl" for="detail">자세한 내용 <span style="color:var(--ink-3);font-weight:400">(선택)</span></label>
-      <textarea id="detail" placeholder="예: 조부모님 칠순으로 제주 친척 댁 방문"></textarea>
-      <p class="src">적어두시면 허가가 어려운 사유가 섞여 있는지 함께 확인해 드립니다.</p>
-    </div>
-
-    <div id="reasonMsg"></div>
-
-    <div class="row">
-      <button class="btn ghost" id="back0">이전</button>
-      <button class="btn wide" id="go2" disabled>다음</button>
-    </div>
-  </section>
-
-  <!-- ============ 2. 날짜 ============ -->
-  <section class="step" id="s2">
-    <h2 class="q">언제 다녀오시나요?</h2>
-    <p class="hint">시작일을 먼저 누르고, 마지막 날을 눌러주세요. 하루만 가면 같은 날을 한 번만 누르면 됩니다.</p>
-
-    <div class="cal">
-      <div class="calhead">
-        <button class="nav" id="prevM" aria-label="이전 달">‹</button>
-        <b id="ymLabel"></b>
-        <button class="nav" id="nextM" aria-label="다음 달">›</button>
-      </div>
-      <div class="dow"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
-      <div class="grid" id="grid"></div>
-      <div class="legend">
-        <span><s style="background:#EFC0BC"></s>공휴일</span>
-        <span><s style="background:#F0DCB4"></s>재량휴업일</span>
-        <span><s style="background:#E3E7E3"></s>방학</span>
-        <span><s style="background:transparent;border:1.5px solid var(--clay)"></s>신청 마감</span>
-      </div>
-      <p class="picked" id="picked">날짜를 선택해 주세요</p>
-    </div>
-
-    <div class="card" id="halfBox" style="display:none;margin-top:10px">
-      <label class="fl">그날 학교에 갔다가 나가나요?</label>
-      <div style="display:flex;gap:8px">
-        <button class="btn ghost small" data-half="0" id="h0" style="flex:1">아니요, 하루 종일</button>
-        <button class="btn ghost small" data-half="1" id="h1" style="flex:1">네, 등교 후 나가요</button>
-      </div>
-    </div>
-
-    <div class="row">
-      <button class="btn ghost" id="back1">이전</button>
-      <button class="btn wide" id="go3" disabled>결과 보기</button>
-    </div>
-  </section>
-
-  <!-- ============ 3. 결과 ============ -->
-  <section class="step" id="s3">
-    <div id="result"></div>
-    <div class="row">
-      <button class="btn ghost" id="back2">날짜 바꾸기</button>
-      <button class="btn wide" id="printBtn">신청서 미리보기</button>
-    </div>
-    <button class="btn ghost small" style="margin-top:8px" id="copySms">담임 선생님께 보낼 문자 복사하기</button>
-    <p class="disclaim">이 계산은 참고용입니다. 실제 허가 여부와 출석 인정은 학교(원)장의 결재로 정해지며, 학교 규정에 따라 신청 기한이 다를 수 있습니다. 사전 허가 없이 다녀온 교외체험학습은 미인정 결석으로 처리되는 것이 원칙입니다.</p>
-    <div class="foot"><button id="restart">처음부터 다시</button></div>
-  </section>
-
-  <!-- ============ 관리자 ============ -->
-  <section class="step" id="sAdmin">
-    <h2 class="q">학교 담당 선생님용 설정</h2>
-    <p class="hint">학사일정과 기준을 입력하면 학부모용 링크가 만들어집니다. 가정통신문이나 학교 누리집에 이 링크만 올리시면 학부모는 아무것도 입력하지 않아도 됩니다.</p>
-
-    <div class="card">
-      <label class="fl">학교 이름</label>
-      <input type="text" id="aName" placeholder="예: ○○초등학교">
-    </div>
-
-    <div class="card">
-      <label class="fl">신청 기한</label>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input type="number" id="aLead" min="1" max="10" value="3" style="width:80px" inputmode="numeric">
-        <span style="font-size:14px;color:var(--ink-2)">일 전까지</span>
-      </div>
-      <div style="margin-top:10px">
-        <label class="choice" style="margin:0 0 6px"><input type="radio" name="basis" value="school" checked style="width:auto;min-height:0;margin:4px 0 0"><span class="t" style="margin-left:8px">수업일 기준<span class="d">토·일·공휴일·방학·재량휴업일을 모두 제외 (권장)</span></span></label>
-        <label class="choice" style="margin:0"><input type="radio" name="basis" value="calendar" style="width:auto;min-height:0;margin:4px 0 0"><span class="t" style="margin-left:8px">달력일 기준<span class="d">쉬는 날도 그대로 셈</span></span></label>
-      </div>
-      <label class="fl" style="margin-top:16px">3일을 세는 방법</label>
-      <div>
-        <label class="choice" style="margin:0 0 6px"><input type="radio" name="incl" value="0" checked style="width:auto;min-height:0;margin:4px 0 0"><span style="margin-left:8px"><span class="t">신청일은 빼고 셈</span><span class="d">신청서 낸 다음날부터 수업일 3일이 남아야 함 (권장)</span></span></label>
-        <label class="choice" style="margin:0"><input type="radio" name="incl" value="1" style="width:auto;min-height:0;margin:4px 0 0"><span style="margin-left:8px"><span class="t">신청일을 첫날로 셈</span><span class="d">마감일이 하루 늦어짐</span></span></label>
-      </div>
-      <label class="fl" style="margin-top:16px">보고서 제출 기한 (체험학습 종료 후)</label>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input type="number" id="aReport" min="1" max="30" value="7" style="width:80px" inputmode="numeric">
-        <span style="font-size:14px;color:var(--ink-2)">일 이내</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <label class="fl">연간 출석인정 일수</label>
-      <input type="number" id="aAnnual" min="1" max="60" placeholder="예: 20" inputmode="numeric">
-      <label class="fl" style="margin-top:14px">1회 연속 허용 일수</label>
-      <input type="number" id="aMax" min="1" max="30" placeholder="예: 10" inputmode="numeric">
-    </div>
-
-    <div class="card">
-      <label class="fl">방학 기간</label>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input type="date" id="avs" aria-label="방학 시작일">
-        <span style="color:var(--ink-3)">~</span>
-        <input type="date" id="ave" aria-label="방학 종료일">
-      </div>
-      <button class="btn ghost small" style="margin-top:8px" id="aAddVac">방학 추가</button>
-      <div class="chips" id="aVacChips"></div>
-    </div>
-
-    <div class="card">
-      <label class="fl">재량휴업일</label>
-      <div style="display:flex;gap:8px">
-        <input type="date" id="acd" aria-label="재량휴업일">
-        <button class="btn ghost small" style="width:auto;padding:11px 16px;flex:none" id="aAddClo">추가</button>
-      </div>
-      <div class="chips" id="aCloChips"></div>
-    </div>
-
-    <div class="card">
-      <label class="fl">임시공휴일 추가 <span style="color:var(--ink-3);font-weight:400">(선거일·임시공휴일 등)</span></label>
-      <div style="display:flex;gap:8px">
-        <input type="date" id="ahd" aria-label="임시공휴일">
-        <button class="btn ghost small" style="width:auto;padding:11px 16px;flex:none" id="aAddHol">추가</button>
-      </div>
-      <div class="chips" id="aHolChips"></div>
-      <p class="src">선거일·임시공휴일처럼 미리 알 수 없는 날만 여기에 넣으면 됩니다. 나머지 법정공휴일과 대체공휴일은 자동으로 계산됩니다.</p>
-    </div>
-
-    <div class="card">
-      <label class="fl">음력 명절 <span style="color:var(--ink-3);font-weight:400">(새 학년도에 한 번만)</span></label>
-      <p class="src" style="margin:0 0 10px">설날·추석·부처님오신날 <b>당일</b>만 넣으면 연휴와 대체공휴일은 자동으로 만들어집니다. 2026년은 이미 들어 있습니다.</p>
-      <label class="fl" style="margin-top:10px">설날</label><input type="date" id="aSeol">
-      <label class="fl" style="margin-top:10px">추석</label><input type="date" id="aChu">
-      <label class="fl" style="margin-top:10px">부처님오신날</label><input type="date" id="aBud">
-      <div class="chips" id="aLunarChips"></div>
-    </div>
-
-    <button class="btn" id="makeLink">학부모용 링크 만들기</button>
-    <div class="card" id="linkBox" style="display:none;margin-top:12px">
-      <label class="fl">이 링크를 안내해 주세요</label>
-      <textarea id="linkOut" readonly style="font-size:12.5px;font-family:ui-monospace,monospace"></textarea>
-      <button class="btn ghost small" style="margin-top:8px" id="copyLink">링크 복사하기</button>
-    </div>
-    <div class="foot"><button id="leaveAdmin">학부모 화면으로 돌아가기</button></div>
-  </section>
-
-  <div class="foot" id="adminEntry"><button id="enterAdmin">학교 담당 선생님용 설정</button></div>
+  <div class="pad-bottom" id="padder"></div>
 </div>
+
+<!-- 학사일정 입력 -->
+<div class="wrap" id="cal-edit" style="display:none">
+  <header>
+    <p class="kicker">학사일정</p>
+    <h1>학교 쉬는 날을<br>알려주세요</h1>
+    <p class="lede">방학과 재량휴업일은 학교마다 달라서, 넣어주시면 기한이 정확해집니다. 가정통신문이나 학교 누리집 학사일정에서 확인할 수 있습니다.</p>
+  </header>
+  <div class="card">
+    <label class="fl">방학</label>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input type="date" id="vs" aria-label="방학 시작일">
+      <span style="color:var(--ink-3)">~</span>
+      <input type="date" id="ve" aria-label="방학 종료일">
+    </div>
+    <button class="btn ghost" style="margin-top:10px" id="addVac">방학 추가</button>
+    <div class="chips" id="vacChips"></div>
+  </div>
+  <div class="card">
+    <label class="fl">재량휴업일</label>
+    <div style="display:flex;gap:8px">
+      <input type="date" id="cd" aria-label="재량휴업일">
+      <button class="btn ghost" style="width:auto;padding:12px 18px;flex:none" id="addClo">추가</button>
+    </div>
+    <div class="chips" id="cloChips"></div>
+  </div>
+  <button class="btn" style="margin-top:16px" id="doneCal">다 넣었어요</button>
+  <button class="btn link" id="skipCal">나중에 할게요</button>
+  <div class="foot"></div>
+</div>
+
+<!-- 관리자 -->
+<div class="wrap" id="admin" style="display:none">
+  <header>
+    <p class="kicker">학교 담당 선생님용</p>
+    <h1>학부모용 링크<br>만들기</h1>
+    <p class="lede">한 번 설정해 링크를 만들면, 학부모는 아무것도 입력하지 않아도 됩니다. 실제 배포 주소에서 만들어 주세요.</p>
+  </header>
+  <div class="card">
+    <label class="fl">학교 이름</label>
+    <input type="text" id="aName" placeholder="○○초등학교">
+  </div>
+  <div class="card">
+    <label class="fl">신청 기한</label>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input type="number" id="aLead" min="1" max="10" value="3" style="width:84px" inputmode="numeric">
+      <span style="font-size:14px;color:var(--ink-2)">수업일 전까지</span>
+    </div>
+    <p class="src">신청서를 낸 날은 빼고 셉니다. 예를 들어 3일이면, 신청 다음날부터 수업일 3일이 남아 있어야 합니다.</p>
+    <label class="fl" style="margin-top:16px">학년도</label>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input type="number" id="aSy" min="2025" max="2040" style="width:110px" inputmode="numeric">
+      <span style="font-size:14px;color:var(--ink-2)">학년도</span>
+    </div>
+    <p class="src">이 링크가 어느 학년도용인지 표시합니다. 학년도가 지나면 학부모 화면에 안내가 뜹니다.</p>
+    <label class="fl" style="margin-top:16px">반일 운영</label>
+    <div class="opts" id="aHalf" style="margin-bottom:0">
+      <button type="button" class="opt" data-v="1">반일 단위 허가함</button>
+      <button type="button" class="opt" data-v="0">1일 단위만 운영</button>
+    </div>
+    <label class="fl" style="margin-top:16px">보고서 제출 기한 (종료 후)</label>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input type="number" id="aReport" min="1" max="30" value="7" style="width:84px" inputmode="numeric">
+      <span style="font-size:14px;color:var(--ink-2)">일 이내</span>
+    </div>
+  </div>
+  <div class="card">
+    <label class="fl">연간 출석인정 일수</label>
+    <input type="number" id="aAnnual" min="1" max="60" placeholder="예: 20" inputmode="numeric">
+    <label class="fl" style="margin-top:16px">1회 연속 허용 일수</label>
+    <input type="number" id="aMax" min="1" max="30" placeholder="예: 10" inputmode="numeric">
+  </div>
+  <div class="card">
+    <label class="fl">방학</label>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input type="date" id="avs" aria-label="방학 시작일">
+      <span style="color:var(--ink-3)">~</span>
+      <input type="date" id="ave" aria-label="방학 종료일">
+    </div>
+    <button class="btn ghost" style="margin-top:10px" id="aAddVac">방학 추가</button>
+    <div class="chips" id="aVacChips"></div>
+  </div>
+  <div class="card">
+    <label class="fl">재량휴업일</label>
+    <div style="display:flex;gap:8px">
+      <input type="date" id="acd" aria-label="재량휴업일">
+      <button class="btn ghost" style="width:auto;padding:12px 18px;flex:none" id="aAddClo">추가</button>
+    </div>
+    <div class="chips" id="aCloChips"></div>
+  </div>
+  <div class="card">
+    <label class="fl">임시공휴일 · 선거일</label>
+    <div style="display:flex;gap:8px">
+      <input type="date" id="ahd" aria-label="임시공휴일">
+      <button class="btn ghost" style="width:auto;padding:12px 18px;flex:none" id="aAddHol">추가</button>
+    </div>
+    <div class="chips" id="aHolChips"></div>
+    <p class="src">법정공휴일·대체공휴일과 설날·추석·부처님오신날은 <b id="until"></b>까지 자동으로 계산됩니다. 예측할 수 없는 날만 넣으시면 됩니다.</p>
+  </div>
+  <button class="btn" style="margin-top:16px" id="mk">링크 만들기</button>
+  <div class="card" id="linkBox" style="display:none;margin-top:12px">
+    <label class="fl">이 주소를 안내해 주세요</label>
+    <textarea id="linkOut" readonly style="font-size:12.5px;font-family:ui-monospace,monospace"></textarea>
+    <button class="btn ghost" style="margin-top:10px" id="copyLink">복사하기</button>
+  </div>
+  <div class="foot"></div>
+</div>
+
+<div id="bar"><div class="inner">
+  <div class="msg" id="barMsg">다녀올 날을 골라주세요</div>
+  <button id="barBtn" hidden>결과 보기</button>
+</div></div>
 
 <div id="print"></div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -402,103 +374,79 @@ a.txt{color:var(--pine);text-decoration:underline;text-underline-offset:3px}
 (function(){
 "use strict";
 
-/* =========================================================
-   1. 공휴일 (2026년 법정공휴일 · 대체공휴일 포함)
-   ========================================================= */
-/* 양력 고정 공휴일. [월-일, 이름, 대체공휴일 적용 여부]
-   신정·현충일은 대체공휴일 대상이 아님.
-   노동절(5/1)·제헌절(7/17)은 2026년 개정으로 공휴일이 되었고 대체공휴일이 적용됨. */
+/* ================= 공휴일 (규칙 생성) ================= */
 var FIXED = [
-  ["01-01","신정",false],
-  ["03-01","삼일절",true],
-  ["05-01","노동절",true],
-  ["05-05","어린이날",true],
-  ["06-06","현충일",false],
-  ["07-17","제헌절",true],
-  ["08-15","광복절",true],
-  ["10-03","개천절",true],
-  ["10-09","한글날",true],
+  ["01-01","신정",false], ["03-01","삼일절",true], ["05-01","노동절",true],
+  ["05-05","어린이날",true], ["06-06","현충일",false], ["07-17","제헌절",true],
+  ["08-15","광복절",true], ["10-03","개천절",true], ["10-09","한글날",true],
   ["12-25","성탄절",true]
 ];
-
-/* 음력 명절 당일. 연휴(앞뒤 하루)와 대체공휴일은 코드가 알아서 만듭니다.
-   새 학년도가 시작되면 이 세 날짜만 관리자 화면에서 넣어주면 됩니다. */
 var LUNAR = {
-  "2026": {seol:"2026-02-17", chuseok:"2026-09-25", buddha:"2026-05-24"}
+  "2025":{seol:"2025-01-29",chuseok:"2025-10-06",buddha:"2025-05-05"},
+  "2026":{seol:"2026-02-17",chuseok:"2026-09-25",buddha:"2026-05-24"},
+  "2027":{seol:"2027-02-06",chuseok:"2027-09-15",buddha:"2027-05-13"},
+  "2028":{seol:"2028-01-26",chuseok:"2028-10-03",buddha:"2028-05-02"},
+  "2029":{seol:"2029-02-13",chuseok:"2029-09-22",buddha:"2029-05-20"},
+  "2030":{seol:"2030-02-03",chuseok:"2030-09-12",buddha:"2030-05-09"},
+  "2031":{seol:"2031-01-23",chuseok:"2031-10-01",buddha:"2031-05-28"}
 };
-
-/* 임시공휴일·선거일처럼 예측할 수 없는 날 */
-var EXTRA = {
-  "2026-06-03":"선거일"
-};
-
+var LUNAR_UNTIL = 2031;
+var EXTRA = {"2026-06-03":"선거일"};
 var holCache = {};
 
 function buildYear(y){
   var map = {}, subs = [];
   function put(k,n){ if (!map[k]) map[k] = n; }
-
   FIXED.forEach(function(f){
-    var k = y + "-" + f[0];
-    put(k, f[1]);
-    if (f[2]) subs.push({end:k, kind:"wk"});
+    var k = y + "-" + f[0]; put(k, f[1]);
+    if (f[2]) subs.push({end:k, kind:"wk", name:f[1]});
   });
-
   var L = (cfg.lunar && cfg.lunar[y]) || LUNAR[y];
   if (L){
-    if (L.seol){
-      var a = parse(L.seol);
+    if (L.seol){ var a = parse(L.seol);
       put(key(addDays(a,-1)),"설날"); put(key(a),"설날"); put(key(addDays(a,1)),"설날");
-      subs.push({mid:key(a), end:key(addDays(a,1)), kind:"fest"});
-    }
-    if (L.chuseok){
-      var b = parse(L.chuseok);
+      subs.push({mid:key(a), end:key(addDays(a,1)), kind:"fest", name:"설날"}); }
+    if (L.chuseok){ var b = parse(L.chuseok);
       put(key(addDays(b,-1)),"추석"); put(key(b),"추석"); put(key(addDays(b,1)),"추석");
-      subs.push({mid:key(b), end:key(addDays(b,1)), kind:"fest"});
-    }
-    if (L.buddha){ put(L.buddha,"석가탄신"); subs.push({end:L.buddha, kind:"wk"}); }
+      subs.push({mid:key(b), end:key(addDays(b,1)), kind:"fest", name:"추석"}); }
+    if (L.buddha){ put(L.buddha,"부처님오신날");
+      subs.push({end:L.buddha, kind:"wk", name:"부처님오신날"}); }
   }
-
   for (var e in EXTRA){ if (e.slice(0,4) === String(y)) put(e, EXTRA[e]); }
 
-  /* 대체공휴일
-     - 명절 연휴(fest): 연휴 사흘 중 일요일과 겹친 날 수만큼
-     - 그 밖(wk): 토요일이나 일요일과 겹치면 하루 */
   subs.forEach(function(sb){
     var need = 0;
+    function clash(d){ var k = key(d); return map[k] && map[k] !== sb.name; }
     if (sb.kind === "fest"){
       var m = parse(sb.mid);
-      [-1,0,1].forEach(function(o){ if (addDays(m,o).getDay() === 0) need++; });
+      [-1,0,1].forEach(function(o){
+        var d = addDays(m,o);
+        if (d.getDay() === 0 || clash(d)) need++;
+      });
     } else {
-      var w = parse(sb.end).getDay();
-      if (w === 0 || w === 6) need++;
+      var e2 = parse(sb.end), w = e2.getDay();
+      if (w === 0 || w === 6 || clash(e2)) need++;
     }
-    var d = addDays(parse(sb.end), 1), guard = 0;
+    var d2 = addDays(parse(sb.end),1), guard = 0;
     while (need > 0 && guard++ < 20){
-      var k = key(d), w2 = d.getDay();
-      if (w2 !== 0 && w2 !== 6 && !map[k]){ map[k] = "대체"; need--; }
-      d = addDays(d,1);
+      var k2 = key(d2), w2 = d2.getDay();
+      if (w2 !== 0 && w2 !== 6 && !map[k2]){ map[k2] = "대체공휴일"; need--; }
+      d2 = addDays(d2,1);
     }
   });
   return map;
 }
+function yearHolidays(y){ if (!holCache[y]) holCache[y] = buildYear(y); return holCache[y]; }
 
-function yearHolidays(y){
-  if (!holCache[y]) holCache[y] = buildYear(y);
-  return holCache[y];
-}
-
-/* =========================================================
-   2. 설정
-   ========================================================= */
+/* ================= 설정 ================= */
 var cfg = {
-  name:"", lead:3, basis:"school", incl:false, report:7, lunar:{},
-  annual:null, max:null, used:0,
-  vac:[], clo:[], hol:[], rough:false
+  name:"", lead:3, report:7, annual:null, max:null, sy:null, half:true,
+  vac:[], clo:[], hol:[], lunar:{}, locked:false, asked:false
 };
-
+/* 학년도: 3월 1일에 시작해 이듬해 2월 말일에 끝난다 */
+function schoolYear(d){ return (d.getMonth() + 1) >= 3 ? d.getFullYear() : d.getFullYear() - 1; }
 function b64e(o){
-  var s = JSON.stringify(o), b = new TextEncoder().encode(s), t = "";
+  var b = new TextEncoder().encode(JSON.stringify(o)), t = "";
   for (var i=0;i<b.length;i++) t += String.fromCharCode(b[i]);
   return btoa(t).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
 }
@@ -509,41 +457,28 @@ function b64d(s){
   for (var i=0;i<raw.length;i++) arr[i] = raw.charCodeAt(i);
   return JSON.parse(new TextDecoder().decode(arr));
 }
-function store(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
-function recall(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
-
-function loadConfig(){
+function save(){
+  try{ localStorage.setItem("gcl2", JSON.stringify({
+    vac:cfg.vac, clo:cfg.clo, asked:cfg.asked
+  })); }catch(e){}
+}
+function load(){
   var q = new URLSearchParams(location.search).get("s");
-  if (q){
-    try{ var o = b64d(q); for (var k in o) cfg[k] = o[k]; cfg.locked = true; return true; }catch(e){}
-  }
-  var saved = recall("gcl_cfg");
-  if (saved){
-    try{ var p = JSON.parse(saved); for (var j in p) cfg[j] = p[j]; return true; }catch(e){}
-  }
-  return false;
-}
-function saveConfig(){
-  store("gcl_cfg", JSON.stringify({
-    name:cfg.name, lead:cfg.lead, basis:cfg.basis, incl:cfg.incl, report:cfg.report,
-    annual:cfg.annual, max:cfg.max, used:cfg.used,
-    vac:cfg.vac, clo:cfg.clo, hol:cfg.hol, lunar:cfg.lunar, rough:cfg.rough
-  }));
+  if (q){ try{ var o = b64d(q); for (var k in o) cfg[k] = o[k]; cfg.locked = true; return; }catch(e){} }
+  try{
+    var p = JSON.parse(localStorage.getItem("gcl2") || "null");
+    if (p){ cfg.vac = p.vac || []; cfg.clo = p.clo || []; cfg.asked = !!p.asked; }
+  }catch(e){}
 }
 
-/* =========================================================
-   3. 날짜 유틸
-   ========================================================= */
+/* ================= 날짜 ================= */
 var DOW = "일월화수목금토";
-function key(d){
-  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
-}
-function parse(s){ var p = s.split("-").map(Number); return new Date(p[0], p[1]-1, p[2]); }
+function key(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function parse(s){ var p = s.split("-").map(Number); return new Date(p[0],p[1]-1,p[2]); }
 function addDays(d,n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()+n); }
-function midnight(){ var t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); }
-function fmt(d){ return (d.getMonth()+1) + "월 " + d.getDate() + "일(" + DOW[d.getDay()] + ")"; }
-function fmtY(d){ return d.getFullYear() + "년 " + (d.getMonth()+1) + "월 " + d.getDate() + "일(" + DOW[d.getDay()] + ")"; }
-function daysBetween(a,b){ return Math.round((b - a) / 86400000); }
+function today(){ var t = new Date(); return new Date(t.getFullYear(),t.getMonth(),t.getDate()); }
+function fmt(d){ return (d.getMonth()+1)+"월 "+d.getDate()+"일("+DOW[d.getDay()]+")"; }
+function fmtY(d){ return d.getFullYear()+"년 "+(d.getMonth()+1)+"월 "+d.getDate()+"일("+DOW[d.getDay()]+")"; }
 
 function holidayName(k){
   var m = yearHolidays(k.slice(0,4));
@@ -551,540 +486,493 @@ function holidayName(k){
   if (cfg.hol.indexOf(k) >= 0) return "휴일";
   return null;
 }
-function vacationName(k){
-  for (var i=0;i<cfg.vac.length;i++){
-    if (k >= cfg.vac[i][0] && k <= cfg.vac[i][1]) return "방학";
-  }
+function vacation(k){
+  for (var i=0;i<cfg.vac.length;i++) if (k >= cfg.vac[i][0] && k <= cfg.vac[i][1]) return true;
+  return false;
+}
+function why(d){
+  var k = key(d), h = holidayName(k);
+  if (h) return h;
+  if (d.getDay() === 0) return "일요일";
+  if (d.getDay() === 6) return "토요일";
+  if (cfg.clo.indexOf(k) >= 0) return "재량휴업일";
+  if (vacation(k)) return "방학";
   return null;
 }
-function dayType(d){
-  var k = key(d);
-  if (holidayName(k)) return "holiday";
-  if (d.getDay() === 0 || d.getDay() === 6) return "weekend";
-  if (cfg.clo.indexOf(k) >= 0) return "closure";
-  if (vacationName(k)) return "vacation";
-  return "school";
-}
-function isSchool(d){ return dayType(d) === "school"; }
+function isSchool(d){ return why(d) === null; }
 
-/* 신청 마감일.
-   "시작 최소 3일(휴일 제외) 전까지 제출" = 신청서를 낸 날은 빼고 그 뒤로
-   수업일 3일이 온전히 남아야 한다는 뜻이므로, 역산으로 lead+1번째 수업일이 마감일.
-   (cfg.incl = true 로 두면 신청일을 3일 안에 포함해 lead번째 날을 마감으로 봄) */
 function deadlineFor(start){
-  var need = cfg.lead + (cfg.incl ? 0 : 1);
-  var left = need, d = addDays(start,-1), guard = 0;
+  var left = cfg.lead + 1, d = addDays(start,-1), guard = 0;
   while (guard++ < 500){
-    if (cfg.basis === "calendar" || isSchool(d)){
-      left--;
-      if (left === 0) return d;
-    }
+    if (isSchool(d)){ left--; if (left === 0) return d; }
     d = addDays(d,-1);
   }
   return null;
 }
-/* 오늘 신청해도 늦지 않은 가장 빠른 출발일 */
-function earliestStart(){
-  var today = midnight(), d = addDays(today,1), guard = 0;
+function earliest(){
+  var t = today(), d = addDays(t,1), guard = 0;
   while (guard++ < 500){
-    if (isSchool(d)){
-      var dl = deadlineFor(d);
-      if (dl && dl.getTime() >= today.getTime()) return d;
-    }
+    if (isSchool(d)){ var dl = deadlineFor(d); if (dl && dl.getTime() >= t.getTime()) return d; }
     d = addDays(d,1);
   }
   return null;
 }
 function countSchool(a,b){
   var n = 0, d = a, guard = 0;
-  while (d.getTime() <= b.getTime() && guard++ < 500){
-    if (isSchool(d)) n++;
-    d = addDays(d,1);
-  }
+  while (d.getTime() <= b.getTime() && guard++ < 500){ if (isSchool(d)) n++; d = addDays(d,1); }
   return n;
 }
 
-/* =========================================================
-   4. 사유 판정
-   ========================================================= */
-var REASONS = [
-  {id:"field", t:"현장체험학습", d:"박물관·유적지·전시 등 학습 목적 방문", v:"ok"},
-  {id:"kin",   t:"친·인척 방문", d:"조부모님 댁, 친척 경조사 등", v:"ok"},
-  {id:"trip",  t:"가족동반 여행", d:"보호자와 함께하는 국내·국외 여행", v:"ok"},
-  {id:"herit", t:"고적 답사", d:"문화재·사적지 답사", v:"ok"},
-  {id:"local", t:"향토 행사 참여", d:"지역 축제, 마을 행사 등", v:"ok"},
-  {id:"etc",   t:"그 밖의 사유", d:"학교(원)장이 인정하는 체험활동", v:"warn"}
-];
-var BLOCKED = [
-  {id:"hagwon", t:"학원 수강", d:"예술·체육계 학원 포함"},
-  {id:"lang",   t:"해외 어학연수", d:""},
-  {id:"study",  t:"시험 준비·자율학습", d:"스터디카페·독서실 이용 포함"},
-  {id:"contest",t:"각종 대회 참가", d:"노래·경연 등 개인 참가"},
-  {id:"work",   t:"대가를 받는 시간제 노동", d:""}
-];
-var BLOCK_WORDS = ["학원","어학연수","어학원","스터디카페","독서실","자율학습","시험공부","시험준비","콩쿠르","경연","알바","아르바이트","시간제","과외","선행학습"];
-var CHECK_WORDS = ["해외","국외","출국","외국","입국","캠프","대회","전지훈련"];
-var MED_WORDS = ["병원","진료","입원","수술","치료","검사"];
+/* ================= 상태 ================= */
+var state = { start:null, end:null, reason:null, attend:null, periods:null, miss:null };
+var cells = {}, MONTHS = 10;
 
-function scanText(s){
-  var hits = {block:[], check:[], med:[]};
-  if (!s) return hits;
-  BLOCK_WORDS.forEach(function(w){ if (s.indexOf(w) >= 0) hits.block.push(w); });
-  CHECK_WORDS.forEach(function(w){ if (s.indexOf(w) >= 0) hits.check.push(w); });
-  MED_WORDS.forEach(function(w){ if (s.indexOf(w) >= 0) hits.med.push(w); });
-  return hits;
-}
-
-/* =========================================================
-   5. 상태 · 화면 전환
-   ========================================================= */
-var state = { reason:null, blocked:null, detail:"", start:null, end:null, half:false, step:0 };
-var view = 0;
-
-function show(n){
-  ["s0","s1","s2","s3","sAdmin"].forEach(function(id){ $(id).classList.remove("on"); });
-  if (n === "admin"){ $("sAdmin").classList.add("on"); $("adminEntry").style.display = "none"; }
-  else {
-    $("s" + n).classList.add("on");
-    $("adminEntry").style.display = "";
-    view = n;
-    var t = $("track").children;
-    for (var i=0;i<4;i++) t[i].classList.toggle("on", i <= n);
-    $("track").style.display = "";
-  }
-  if (n === "admin") $("track").style.display = "none";
-  window.scrollTo({top:0, behavior:"smooth"});
-}
 function $(id){ return document.getElementById(id); }
-function toast(msg){
-  var el = $("toast");
-  el.textContent = msg; el.classList.add("on");
-  clearTimeout(el._t); el._t = setTimeout(function(){ el.classList.remove("on"); }, 2200);
+function toast(m){
+  var el = $("toast"); el.textContent = m; el.classList.add("on");
+  clearTimeout(el._t); el._t = setTimeout(function(){ el.classList.remove("on"); }, 2400);
 }
-function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
 
-/* =========================================================
-   6. 학사일정 입력 (학부모 · 관리자 공용)
-   ========================================================= */
-function renderChips(box, arr, kind, onDone){
-  box.innerHTML = "";
-  arr.forEach(function(item, i){
-    var label = kind === "vac" ? (item[0].slice(5) + "~" + item[1].slice(5)) : item.slice(5);
-    var c = document.createElement("span");
-    c.className = "chip";
-    c.innerHTML = esc(label) + ' <button aria-label="삭제">&times;</button>';
-    c.querySelector("button").onclick = function(){ arr.splice(i,1); renderChips(box, arr, kind, onDone); if (onDone) onDone(); };
-    box.appendChild(c);
+/* ================= 달력 ================= */
+function buildCal(){
+  var host = $("cal"); host.innerHTML = ""; cells = {};
+  var t = today(), cur = new Date(t.getFullYear(), t.getMonth(), 1);
+  var tk = key(t);
+  for (var mi=0; mi<MONTHS; mi++){
+    var y = cur.getFullYear(), m = cur.getMonth();
+    var head = document.createElement("div");
+    head.className = "mon"; head.innerHTML = "<b>" + y + "년 " + (m+1) + "월</b>";
+    host.appendChild(head);
+    var g = document.createElement("div"); g.className = "grid";
+    var first = new Date(y,m,1), last = new Date(y,m+1,0);
+    for (var p=0;p<first.getDay();p++){
+      var pd = document.createElement("div"); pd.className = "d pad"; g.appendChild(pd);
+    }
+    for (var i=1;i<=last.getDate();i++){
+      (function(y,m,i){
+        var d = new Date(y,m,i), k = key(d);
+        var b = document.createElement("button");
+        b.type = "button"; b.textContent = i; b.dataset.k = k;
+        var reason = why(d), past = d.getTime() < t.getTime();
+        b.className = "d" + ((reason || past) ? " off" : "") + (k === tk ? " today" : "");
+        b.setAttribute("aria-label", fmtY(d) + (reason ? " " + reason : ""));
+        b.onclick = function(){ tap(d, reason, past); };
+        cells[k] = b; g.appendChild(b);
+      })(y,m,i);
+    }
+    host.appendChild(g);
+    cur = new Date(y, m+1, 1);
+  }
+  paint();
+}
+
+function paint(){
+  var dl = state.start ? deadlineFor(state.start) : null;
+  var dlk = dl ? key(dl) : null;
+  var sk = state.start ? key(state.start) : null;
+  var ek = state.end ? key(state.end) : null;
+  Object.keys(cells).forEach(function(k){
+    var el = cells[k], base = el.className.indexOf("off") >= 0 ? " off" : "";
+    var td = el.className.indexOf("today") >= 0 ? " today" : "";
+    var c = "d" + base + td;
+    if (sk && ek){
+      if (k === sk && k === ek) c += " sel";
+      else if (k === sk) c += " sel a";
+      else if (k === ek) c += " sel b";
+      else if (k > sk && k < ek) c += " rng";
+    } else if (k === sk) c += " sel";
+    el.className = c;
+    var r = el.querySelector(".ring"); if (r) r.remove();
+    if (dlk && k === dlk){
+      el.insertAdjacentHTML("beforeend",
+        '<svg class="ring" viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="24" cy="24" rx="20" ry="17" transform="rotate(-8 24 24)"/></svg>');
+    }
   });
 }
-function wireCalendarInputs(ids, done){
-  $(ids.addVac).onclick = function(){
-    var a = $(ids.vs).value, b = $(ids.ve).value;
-    if (!a || !b) return toast("방학 시작일과 종료일을 모두 골라주세요");
-    if (a > b) return toast("종료일이 시작일보다 빨라요");
-    cfg.vac.push([a,b]); $(ids.vs).value = ""; $(ids.ve).value = "";
-    renderChips($(ids.vacChips), cfg.vac, "vac", done); if (done) done();
-  };
-  $(ids.addClo).onclick = function(){
-    var v = $(ids.cd).value;
-    if (!v) return toast("날짜를 골라주세요");
-    if (cfg.clo.indexOf(v) < 0) cfg.clo.push(v);
-    cfg.clo.sort(); $(ids.cd).value = "";
-    renderChips($(ids.cloChips), cfg.clo, "clo", done); if (done) done();
-  };
-}
 
-/* =========================================================
-   7. 달력
-   ========================================================= */
-var cursor = midnight();
-cursor = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
-
-function drawCal(){
-  var y = cursor.getFullYear(), m = cursor.getMonth();
-  $("ymLabel").textContent = y + "년 " + (m+1) + "월";
-  var first = new Date(y, m, 1), last = new Date(y, m+1, 0);
-  var g = $("grid"); g.innerHTML = "";
-  var today = midnight();
-  var dl = state.start ? deadlineFor(state.start) : null;
-
-  for (var p=0;p<first.getDay();p++){
-    var pad = document.createElement("div"); pad.className = "cell pad"; g.appendChild(pad);
-  }
-  for (var i=1;i<=last.getDate();i++){
-    (function(i){
-      var d = new Date(y, m, i), k = key(d), t = dayType(d);
-      var b = document.createElement("button");
-      b.type = "button"; b.className = "cell " + t;
-      var tag = holidayName(k) || (t === "closure" ? "재량휴업" : (t === "vacation" ? "방학" : ""));
-      b.innerHTML = i + (tag ? '<span class="tag">' + esc(tag) + "</span>" : "");
-      b.setAttribute("aria-label", fmtY(d) + (tag ? " " + tag : ""));
-
-      if (d.getTime() < today.getTime()) b.classList.add("past");
-
-      if (state.start && state.end){
-        if (d.getTime() > state.start.getTime() && d.getTime() < state.end.getTime()) b.classList.add("inrange");
-        if (k === key(state.start)) b.classList.add("pick", state.start.getTime() === state.end.getTime() ? "solo" : "a");
-        if (k === key(state.end) && state.start.getTime() !== state.end.getTime()) b.classList.add("pick","b");
-      } else if (state.start && k === key(state.start)){
-        b.classList.add("pick","solo");
-      }
-      if (dl && k === key(dl)){
-        b.insertAdjacentHTML("beforeend",
-          '<svg class="circle" viewBox="0 0 46 46" aria-hidden="true"><ellipse cx="23" cy="23" rx="19" ry="16" transform="rotate(-8 23 23)"/></svg>');
-      }
-      b.onclick = function(){ pick(d); };
-      g.appendChild(b);
-    })(i);
-  }
-  var min = new Date(today.getFullYear(), today.getMonth(), 1);
-  $("prevM").disabled = (y === min.getFullYear() && m === min.getMonth());
-}
-
-function pick(d){
-  if (!isSchool(d)){
-    var t = dayType(d);
-    toast(t === "vacation" ? "방학 중에는 수업일이 아니라 신청 대상이 아니에요"
-        : t === "closure" ? "재량휴업일이라 신청하지 않아도 됩니다"
-        : "쉬는 날이라 신청 대상이 아니에요");
+function tap(d, reason, past){
+  if (past){ toast("지난 날짜는 고를 수 없어요"); return; }
+  if (reason){
+    toast(fmt(d) + "은 " + reason + "이라 신청 대상이 아니에요");
     return;
   }
-  if (d.getTime() < midnight().getTime()){ toast("지난 날짜는 고를 수 없어요"); return; }
-
-  if (!state.start || (state.start && state.end)){
-    state.start = d; state.end = null;
-  } else if (d.getTime() < state.start.getTime()){
-    state.start = d; state.end = null;
-  } else {
-    state.end = d;
+  if (!state.start || state.end){ state.start = d; state.end = null; }
+  else if (d.getTime() < state.start.getTime()){ state.start = d; state.end = null; }
+  else { state.end = d; }
+  state.attend = null; state.periods = null; state.miss = null;
+  paint(); render();
+  if (state.end){
+    var dl = deadlineFor(state.start);
+    var target = dl && cells[key(dl)] ? cells[key(dl)] : null;
+    if (target) target.scrollIntoView({block:"center", behavior:"smooth"});
   }
-  updatePicked(); drawCal();
 }
 
-function updatePicked(){
-  var el = $("picked");
-  if (!state.start){ el.textContent = "날짜를 선택해 주세요"; $("go3").disabled = true; $("halfBox").style.display = "none"; return; }
-  var dl = deadlineFor(state.start);
-  var dlTxt = dl ? "<br>신청 마감 <b>" + fmt(dl) + "</b>" : "";
+/* ================= 차감 일수 =================
+   반일은 학교 자율. 기본 규칙:
+   - 등교하지 않으면 수업 시수와 상관없이 1일
+   - 등교하되 그날 일과가 4교시 이내에 끝나면 반일이 아니라 1일 (예외 규정)
+   - 등교하고 5교시 이상인 날, 체험학습이 3차시 이하면 반일 */
+function isSingle(){ return state.start && state.end && key(state.start) === key(state.end); }
+
+function charge(){
+  var used = countSchool(state.start, state.end);
+  if (!isSingle() || cfg.half === false) return used;
+  if (state.attend === "yes" && state.periods === "ge5" && state.miss === "le3") return 0.5;
+  return used;
+}
+function chargeNote(){
+  if (!state.attend) return "등교 여부를 골라주시면 차감 일수를 정확히 계산해 드립니다.";
+  if (state.attend === "no") return "등교하지 않으면 수업 시수와 상관없이 1일로 처리됩니다.";
+  if (!state.periods) return "그날 수업 시수를 골라주세요.";
+  if (state.periods === "le4") return "4교시 이내에 일과가 끝나는 등교일은 반일이 아니라 1일로 처리됩니다.";
+  if (!state.miss) return "체험학습으로 빠지는 시간을 골라주세요.";
+  if (state.miss === "le3") return "체험학습이 3차시 이하이므로 반일(0.5일)로 처리할 수 있습니다.";
+  return "체험학습이 4차시 이상이므로 1일로 처리됩니다.";
+}
+function renderHalf(){
+  var box = $("half");
+  if (!isSingle() || cfg.half === false){ box.innerHTML = ""; return; }
+  function row(q, k, opts){
+    var h = '<div class="qrow"><p class="q">' + q + '</p><div class="opts" style="margin-bottom:0">';
+    opts.forEach(function(o){
+      h += '<button type="button" class="opt' + (state[k] === o[0] ? " on" : "") +
+           '" data-k="' + k + '" data-v="' + o[0] + '">' + o[1] + "</button>";
+    });
+    return h + "</div></div>";
+  }
+  var h = '<h2 class="sec">차감 일수</h2><div class="card">';
+  h += row("그날 학교에 등교하나요?", "attend", [["no","등교하지 않아요"],["yes","등교했다가 나가요"]]);
+  if (state.attend === "yes"){
+    h += row("그날 수업은 몇 교시인가요?", "periods", [["le4","4교시 이하"],["ge5","5교시 이상"]]);
+    if (state.periods === "ge5")
+      h += row("체험학습으로 빠지는 시간은?", "miss", [["le3","3차시 이하"],["ge4","4차시 이상"]]);
+  }
+  h += '<p class="src">' + chargeNote() + "</p></div>";
+  box.innerHTML = h;
+  Array.prototype.forEach.call(box.querySelectorAll(".opt"), function(b){
+    b.onclick = function(){
+      var k = b.dataset.k;
+      state[k] = (state[k] === b.dataset.v) ? null : b.dataset.v;
+      if (k === "attend"){ state.periods = null; state.miss = null; }
+      if (k === "periods") state.miss = null;
+      render();
+    };
+  });
+}
+
+/* ================= 주소 공유 ================= */
+function shareUrl(){
+  var p = new URLSearchParams(location.search);
+  if (state.start && state.end) p.set("d", key(state.start) + "_" + key(state.end));
+  else p.delete("d");
+  var a = [state.attend, state.periods, state.miss].filter(Boolean).join(".");
+  if (a) p.set("a", a); else p.delete("a");
+  var qs = p.toString();
+  return location.origin + location.pathname + (qs ? "?" + qs : "");
+}
+function syncUrl(){
+  try{ history.replaceState(null, "", shareUrl()); }catch(e){}
+}
+function restoreUrl(){
+  var p = new URLSearchParams(location.search), d = p.get("d");
+  if (d && /^\d{4}-\d{2}-\d{2}_\d{4}-\d{2}-\d{2}$/.test(d)){
+    var t = d.split("_");
+    var a = parse(t[0]), b = parse(t[1]);
+    if (isSchool(a) && isSchool(b) && b.getTime() >= a.getTime()){ state.start = a; state.end = b; }
+  }
+  var av = (p.get("a") || "").split(".");
+  if (["no","yes"].indexOf(av[0]) >= 0) state.attend = av[0];
+  if (["le4","ge5"].indexOf(av[1]) >= 0) state.periods = av[1];
+  if (["le3","ge4"].indexOf(av[2]) >= 0) state.miss = av[2];
+}
+
+/* ================= 결과 ================= */
+function render(){
+  var bar = $("barMsg"), btn = $("barBtn");
+  if (!state.start){
+    bar.textContent = "다녀올 날을 골라주세요"; btn.hidden = true;
+    $("out").classList.remove("on"); syncUrl(); return;
+  }
   if (!state.end){
-    el.innerHTML = "<b>" + fmt(state.start) + "</b>부터 — 마지막 날을 눌러주세요" + dlTxt;
-    $("go3").disabled = true; $("halfBox").style.display = "none"; return;
+    bar.innerHTML = "<b>" + fmt(state.start) + "</b>마지막 날도 골라주세요";
+    btn.hidden = true; $("out").classList.remove("on"); syncUrl(); return;
   }
-  var n = countSchool(state.start, state.end);
-  el.innerHTML = "<b>" + fmt(state.start) + " ~ " + fmt(state.end) + "</b> · 수업일 " + n + "일" + dlTxt;
-  $("go3").disabled = false;
-  $("halfBox").style.display = (n === 1) ? "" : "none";
-  if (n !== 1) state.half = false;
-}
 
-/* =========================================================
-   8. 결과
-   ========================================================= */
-function buildResult(){
-  var today = midnight();
-  var start = state.start, end = state.end;
-  var dl = deadlineFor(start);
-  var used = countSchool(start, end);
-  var charge = (state.half && used === 1) ? 0.5 : used;
-  var reportDue = addDays(end, cfg.report);
-  var dday = dl ? daysBetween(today, dl) : null;
-  var html = "";
+  var t = today(), dl = deadlineFor(state.start);
+  var late = dl && dl.getTime() < t.getTime();
+  var dday = dl ? Math.round((dl - t) / 86400000) : 0;
+  bar.innerHTML = late
+    ? "<b class='late'>기한이 지났어요</b>다른 날짜를 골라보세요"
+    : "<b>" + fmt(dl) + "까지 신청</b>" + (dday === 0 ? "오늘이 마감입니다" : "D-" + dday);
+  btn.hidden = false;
 
-  /* --- 판정 --- */
-  var v, lab, head, sub;
-  if (!dl){
-    v = "warn"; lab = "확인 필요"; head = "마감일을 계산하지 못했어요"; sub = "학사일정을 다시 확인해 주세요.";
-  } else if (dl.getTime() < today.getTime()){
-    var es = earliestStart();
-    v = "stop"; lab = "신청 기한이 지났습니다";
-    head = "이 날짜는 신청할 수 없어요";
-    sub = "신청 마감은 " + fmt(dl) + "이었습니다."
-        + (es ? " 지금 신청하면 <b>" + fmt(es) + "</b>부터 다녀올 수 있어요." : "");
-  } else if (dl.getTime() === today.getTime()){
-    v = "warn"; lab = "오늘이 마감입니다";
-    head = "오늘 안에 신청서를 내주세요";
-    sub = "오늘을 넘기면 이 날짜로는 신청할 수 없습니다.";
+  var used = countSchool(state.start, state.end);
+  var ch = charge();
+  var report = addDays(state.end, cfg.report);
+  var h = "";
+
+  if (late){
+    var es = earliest();
+    h += '<div class="answer"><p class="lab">이 날짜로는 신청할 수 없습니다</p>' +
+         '<p class="big late">마감은 ' + fmt(dl) + '이었어요</p>' +
+         '<p class="sub">' + (es ? "지금 신청하면 <b>" + fmt(es) + "</b>부터 다녀올 수 있습니다." : "") + "</p></div>";
   } else {
-    v = "ok"; lab = "신청할 수 있어요";
-    head = fmt(dl) + "까지 제출";
-    sub = "오늘 기준 D-" + dday + " · 아직 " + dday + "일 남았습니다.";
+    h += '<div class="answer"><p class="lab">신청서 제출 마감</p>' +
+         '<p class="big">' + fmtY(dl) + "</p>" +
+         '<p class="sub">' + (dday === 0 ? "오늘 안에 내셔야 합니다." : "오늘 기준 D-" + dday + " · 아직 " + dday + "일 남았습니다.") + "</p>" +
+         '<div class="split">' +
+         '<div><p class="k">출석 인정 차감</p><p class="v">' + (ch === 0.5 ? "반일" : ch + "일") + "</p></div>" +
+         '<div><p class="k">보고서 마감</p><p class="v">' + fmt(report) + "</p></div>" +
+         "</div></div>";
   }
-  html += '<div class="verdict ' + v + '"><p class="lab">' + lab + '</p><h3>' + head + '</h3><p>' + sub + '</p></div>';
+  $("answer").innerHTML = h;
 
-  /* --- 사실 --- */
-  var reason = null;
-  REASONS.forEach(function(r){ if (r.id === state.reason) reason = r; });
-  html += '<div class="facts">';
-  html += fact("체험학습 기간", fmtY(start) + (start.getTime() !== end.getTime() ? "<br>~ " + fmtY(end) : ""), "");
-  html += fact("출석 인정 차감", (charge === 0.5 ? "반일(0.5일)" : charge + "일"),
-               charge === 0.5 ? "등교 후 3차시 이하로 나가는 경우" : "쉬는 날은 빼고 센 수업일 수");
-  if (cfg.annual){
-    var left = cfg.annual - (cfg.used || 0) - charge;
-    html += fact("남는 일수", (left < 0 ? "초과" : left + "일"),
-                 "연간 " + cfg.annual + "일 중 " + ((cfg.used||0) + charge) + "일 사용");
-  }
-  html += fact("신청 마감", dl ? fmtY(dl) : "—", (cfg.basis === "school" ? "수업일" : "달력일") + " 기준 " + cfg.lead + "일 전" + (cfg.incl ? " (신청일 포함)" : " · 신청일 다음날부터 " + cfg.lead + "일이 남아야 함)"));
-  html += fact("보고서 마감", fmtY(reportDue), "체험학습 종료 후 " + cfg.report + "일 이내");
-  html += "</div>";
-
-  /* --- 주의 --- */
-  var notes = [];
-
-  if (reason && reason.v === "warn"){
-    notes.push(["attn", "<b>‘그 밖의 사유’</b>는 학교(원)장이 인정하는 체험활동일 때만 허가됩니다. 담임 선생님과 먼저 상의해 보세요."]);
-  }
-  var scan = scanText(state.detail);
-  if (scan.block.length){
-    notes.push(["bad", "적어주신 내용에 <b>" + esc(scan.block.join(", ")) + "</b>이(가) 있습니다. 학원 수강, 어학연수, 시험 준비를 위한 스터디카페·독서실 이용, 대회 참가, 대가를 받는 노동은 교외체험학습으로 인정되지 않고 미인정 결석으로 처리됩니다."]);
-  }
-  if (scan.check.length){
-    notes.push(["attn", "국외로 나가시는 경우, 방학 앞뒤라면 학교에서 <b>출입국사실증명서·항공권</b> 같은 증빙자료를 요청할 수 있습니다."]);
-  }
-  if (scan.med.length){
-    notes.push(["attn", "병원 진료·입원은 교외체험학습이 아니라 <b>질병결석 또는 출석인정결석</b> 절차로 처리됩니다. 담임 선생님께 확인해 주세요."]);
+  /* --- 조건부 경고와 학사일정 요청만 --- */
+  var n = "";
+  if (!cfg.locked && !cfg.vac.length && !cfg.clo.length){
+    n += cfg.asked
+      ? '<div class="warn">지금은 토·일·공휴일만 반영한 결과입니다. 방학이나 재량휴업일이 끼면 마감일이 앞당겨집니다. <button class="btn link" id="openCal" style="display:inline;width:auto;padding:0">학사일정 넣기</button></div>'
+      : '<div class="prompt"><p class="t">학교 쉬는 날이 아직 빠져 있습니다</p>' +
+        '<p class="d">지금은 토·일·공휴일만 반영했습니다. 방학이나 재량휴업일이 끼어 있으면 마감일이 <b>더 앞당겨집니다</b>.</p>' +
+        '<button class="btn" id="openCal">학사일정 넣기</button></div>';
   }
   if (used >= 5){
-    notes.push(["attn", "<b>연속 5일 이상</b>이면 사전 상담을 거쳐 허가 여부가 정해지고, 기간 중 <b>주 1회 이상</b> 학생 또는 보호자가 담임 선생님께 연락해 안전과 체험 장소를 알려야 합니다."]);
+    n += '<div class="warn"><b>연속 ' + used + "일</b>이면 사전 상담을 거쳐 허가 여부가 정해지고, 기간 중 <b>주 1회 이상</b> 담임 선생님께 연락해 안전과 체험 장소를 알려야 합니다.</div>";
   }
   if (cfg.max && used > cfg.max){
-    notes.push(["bad", "1회 연속 허용 일수(" + cfg.max + "일)를 넘었습니다. 초과한 날은 미인정 결석으로 처리됩니다."]);
+    n += '<div class="warn">1회 연속 허용 일수 <b>' + cfg.max + "일</b>을 넘었습니다. 초과한 날은 미인정 결석으로 처리됩니다.</div>";
   }
-  if (cfg.annual && (cfg.annual - (cfg.used||0) - charge) < 0){
-    notes.push(["bad", "연간 출석인정 일수를 넘었습니다. 학칙에서 정한 일수까지만 인정됩니다."]);
+  if (cfg.annual && used > cfg.annual){
+    n += '<div class="warn">연간 출석인정 일수 <b>' + cfg.annual + "일</b>을 넘었습니다.</div>";
   }
-  notes.push(["", "교외체험학습에는 <b>보호자가 동행</b>해야 합니다. 어려우면 인솔 책임을 질 수 있는 성인을 위임인으로 적어주세요. 위임장은 따로 내지 않습니다."]);
-  notes.push(["", "신청서를 냈다고 허가된 것이 아닙니다. <b>담임 선생님의 허가서나 문자를 받은 뒤</b> 다녀오세요."]);
+  var ey = +key(state.end).slice(0,4);
+  if (!LUNAR[ey] && !(cfg.lunar && cfg.lunar[ey])){
+    n += '<div class="warn"><b>' + ey + "년</b>은 설날·추석 정보가 들어 있지 않아 그날이 반영되지 않습니다. 학교에 문의해 주세요.</div>";
+  }
+  if (cfg.locked && cfg.sy && schoolYear(state.end) !== cfg.sy){
+    n += '<div class="warn">고르신 날짜는 <b>' + schoolYear(state.end) + "학년도</b>인데, 이 링크는 " +
+         cfg.sy + "학년도 학사일정으로 만들어졌습니다. 그 해의 방학·재량휴업일이 반영되지 않았을 수 있습니다.</div>";
+  }
+  $("notes").innerHTML = n;
+  if ($("openCal")) $("openCal").onclick = function(){ screen("cal-edit"); };
 
-  if (cfg.rough){
-    notes.push(["attn", "방학과 재량휴업일을 입력하지 않아 <b>토·일·공휴일만</b> 반영했습니다. 학교 학사일정에 쉬는 날이 더 있으면 마감일이 앞당겨집니다."]);
-  }
+  renderHalf();
+  $("out").classList.add("on");
+  buildPrint(dl, report, ch);
+  syncUrl();
+}
 
-  notes.forEach(function(n){
-    html += '<div class="note ' + n[0] + '">' + n[1] + "</div>";
+/* ================= 사유 ================= */
+var REASONS = ["현장체험학습","친·인척 방문","가족동반 여행","고적 답사","향토 행사 참여","그 밖의 사유"];
+var BLOCK = ["학원 수강","어학연수","스터디카페","독서실","자율학습","시험공부","시험준비","콩쿠르","경연","아르바이트","시간제 노동"];
+var NEG = ["안 ","안가","않","말고","아니","제외","빼고"];
+
+function scan(s){
+  if (!s) return null;
+  for (var i=0;i<BLOCK.length;i++){
+    var w = BLOCK[i], at = s.indexOf(w);
+    if (at < 0) continue;
+    var around = s.slice(Math.max(0, at-6), at + w.length + 8);
+    var negated = NEG.some(function(x){ return around.indexOf(x) >= 0; });
+    if (!negated) return w;
+  }
+  return null;
+}
+function renderOpts(){
+  var box = $("opts"); box.innerHTML = "";
+  REASONS.forEach(function(r){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.textContent = r;
+    b.onclick = function(){
+      state.reason = (state.reason === r) ? null : r;
+      Array.prototype.forEach.call(box.children, function(c){ c.classList.toggle("on", c.textContent === state.reason); });
+      judge();
+    };
+    box.appendChild(b);
   });
-
-  html += '<p class="src">근거: 초·중등교육법 시행령 제48조 제5항, 학교생활기록 작성 및 관리지침(교육부 훈령 제555호), 「학교(원)장 허가 교외체험학습」 운영 요령</p>';
-
-  $("result").innerHTML = html;
-  buildPrint(dl, reportDue, used, charge, reason);
 }
-function fact(k, v, s){
-  return '<div class="fact"><span class="k">' + k + '</span><span class="v">' + v + (s ? "<small>" + s + "</small>" : "") + "</span></div>";
-}
-
-/* =========================================================
-   9. 신청서 미리보기 (서식 1)
-   ========================================================= */
-function buildPrint(dl, reportDue, used, charge, reason){
-  var s = state.start, e = state.end;
-  var forms = ["현장체험학습","친·인척 방문","가족동반여행","고적답사","향토행사 참여","기타"];
-  var idx = {field:0, kin:1, trip:2, herit:3, local:4, etc:5}[state.reason];
-  var marked = forms.map(function(f,i){ return (i === idx ? "■ " : "□ ") + f; }).join("   ");
-
-  $("print").innerHTML =
-    "<h2>「학교(원)장 허가 교외체험학습」신청서</h2>" +
-    '<p class="meta">' + (cfg.name ? esc(cfg.name) + " · " : "") + "신청 마감 " + (dl ? fmtY(dl) : "-") + "</p>" +
-    "<table>" +
-    "<tr><th>성명</th><td></td><th>학년 반 번</th><td></td></tr>" +
-    "<tr><th>보호자 성명</th><td></td><th>휴대전화</th><td></td></tr>" +
-    "<tr><th>신청 기간</th><td colspan='3'>" + fmtY(s) + " ~ " + fmtY(e) +
-      " ( " + (charge === 0.5 ? "반일" : charge + "일간") + " )</td></tr>" +
-    "<tr><th>학습 형태</th><td colspan='3'>" + marked + "</td></tr>" +
-    "<tr><th>목적지</th><td colspan='3'></td></tr>" +
-    "<tr><th>인솔자 · 관계</th><td colspan='3'></td></tr>" +
-    "<tr class='tall'><th>목적</th><td colspan='3'>" + esc(state.detail || "") + "</td></tr>" +
-    "<tr class='tall'><th>체험학습 계획</th><td colspan='3'></td></tr>" +
-    "</table>" +
-    '<div class="warn">※ 5일 이상 연속되는 체험학습 및 가정학습 시 주 1회 이상 학생 또는 보호자가 담임교사에게 연락하여 학생의 안전, 건강, 체험장소 등을 공유하겠습니다.<br>' +
-    "※ 신청서를 제출하였다 하여 체험학습이 허가된 것이 아니며, 담임교사로부터 허가 여부에 관한 허가서(또는 문자)를 받은 후 실시해야 합니다.<br>" +
-    "※ 결과보고서 제출 기한: " + fmtY(reportDue) + " (종료 후 " + cfg.report + "일 이내)</div>" +
-    '<div class="sign">위와 같이 「학교(원)장 허가 교외체험학습」을 신청합니다.<br>' +
-    "20 &nbsp;&nbsp; 년 &nbsp;&nbsp; 월 &nbsp;&nbsp; 일<br>보호자 : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (인)<br>학생 : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (인)</div>";
+function judge(){
+  var v = $("verdict"), txt = $("detail").value.trim(), hit = scan(txt), h = "";
+  if (hit){
+    h = '<div class="verdict no"><b>' + esc(hit) + "</b> 관련 내용이 있는 것 같습니다. 이런 사유는 교외체험학습으로 인정되지 않으니, 내용을 다시 확인하거나 담임 선생님께 문의해 주세요.</div>";
+  } else if (/병원|진료|입원|수술/.test(txt)){
+    h = '<div class="verdict no">병원 진료나 입원은 교외체험학습이 아니라 <b>질병결석</b> 절차로 처리됩니다.</div>';
+  } else if (state.reason === "그 밖의 사유"){
+    h = '<div class="verdict no">‘그 밖의 사유’는 학교(원)장이 인정하는 체험활동일 때만 허가됩니다. 담임 선생님과 먼저 상의해 보세요.</div>';
+  } else if (state.reason){
+    h = '<div class="verdict ok"><b>' + esc(state.reason) + "</b>은(는) 허가 대상입니다. 다만 신청서를 낸다고 모두 허가되는 것은 아니며, 학교(원)장이 검토 후 결정합니다.</div>";
+  }
+  v.innerHTML = h;
 }
 
-function smsText(){
+/* ================= 문자 · 인쇄 ================= */
+function smsBody(){
   var s = state.start, e = state.end, dl = deadlineFor(s);
   var t = "안녕하세요, 선생님. ";
   t += fmt(s) + (s.getTime() !== e.getTime() ? " ~ " + fmt(e) : "") + " 교외체험학습을 신청하려고 합니다.\n";
-  if (state.detail) t += "사유: " + state.detail + "\n";
-  t += "신청서는 " + (dl ? fmtY(dl) : "") + "까지 제출하겠습니다. 확인 부탁드립니다. 감사합니다.";
+  var d = $("detail").value.trim();
+  if (state.reason) t += "사유: " + state.reason + (d ? " (" + d + ")" : "") + "\n";
+  else if (d) t += "사유: " + d + "\n";
+  if (charge() === 0.5) t += "등교 후 나가는 반일 신청입니다.\n";
+  if (dl) t += "신청서는 " + fmtY(dl) + "까지 제출하겠습니다. 확인 부탁드립니다. 감사합니다.";
   return t;
 }
-
-/* =========================================================
-   10. 사유 화면
-   ========================================================= */
-function renderReasons(){
-  var box = $("reasonList"); box.innerHTML = "";
-  REASONS.forEach(function(r){ box.appendChild(choiceEl(r, false)); });
-  var lab = document.createElement("p");
-  lab.className = "grouplabel"; lab.textContent = "허가되지 않는 사유";
-  box.appendChild(lab);
-  BLOCKED.forEach(function(r){ box.appendChild(choiceEl(r, true)); });
-}
-function choiceEl(r, blocked){
-  var b = document.createElement("button");
-  b.type = "button";
-  b.className = "choice" + (blocked ? " no" : "");
-  b.innerHTML = '<span class="dot"></span><span><span class="t">' + esc(r.t) + "</span>" +
-                (r.d ? '<span class="d">' + esc(r.d) + "</span>" : "") + "</span>";
-  b.onclick = function(){
-    document.querySelectorAll("#reasonList .choice").forEach(function(x){ x.classList.remove("sel"); });
-    b.classList.add("sel");
-    if (blocked){ state.blocked = r; state.reason = null; }
-    else { state.reason = r.id; state.blocked = null; }
-    updateReasonMsg();
-  };
-  return b;
-}
-function updateReasonMsg(){
-  var m = $("reasonMsg"), html = "";
-  var scan = scanText($("detail").value);
-  state.detail = $("detail").value.trim();
-
-  if (state.blocked){
-    html += '<div class="verdict stop" style="margin-top:16px"><p class="lab">허가되지 않습니다</p>' +
-            "<h3>" + esc(state.blocked.t) + "은(는)<br>교외체험학습으로 인정되지 않아요</h3>" +
-            "<p>이 사유로 결석하면 미인정 결석으로 처리됩니다. 다른 사유가 있다면 위에서 다시 골라주세요.</p></div>";
-  } else if (scan.block.length){
-    html += '<div class="note bad" style="margin-top:14px">적어주신 <b>' + esc(scan.block.join(", ")) +
-            "</b>은(는) 허가되지 않는 사유입니다. 내용을 다시 확인해 주세요.</div>";
-  } else if (scan.med.length){
-    html += '<div class="note attn" style="margin-top:14px">병원 진료·입원은 교외체험학습이 아니라 <b>질병결석</b> 절차로 처리됩니다.</div>';
-  } else if (scan.check.length){
-    html += '<div class="note attn" style="margin-top:14px">국외로 나가시면 <b>증빙자료</b>를 요청받을 수 있습니다. 가족동반 여행은 가능하지만 어학연수는 인정되지 않습니다.</div>';
-  }
-  m.innerHTML = html;
-  $("go2").disabled = !state.reason;
+function buildPrint(dl, report, used){
+  var s = state.start, e = state.end;
+  var forms = ["현장체험학습","친·인척 방문","가족동반여행","고적답사","향토행사 참여","기타"];
+  var idx = REASONS.indexOf(state.reason);
+  $("print").innerHTML =
+    "<h2>「학교(원)장 허가 교외체험학습」신청서</h2><table>" +
+    "<tr><th>성명</th><td></td><th>학년 반 번</th><td></td></tr>" +
+    "<tr><th>보호자 성명</th><td></td><th>휴대전화</th><td></td></tr>" +
+    "<tr><th>신청 기간</th><td colspan='3'>" + fmtY(s) + " ~ " + fmtY(e) + " ( " + (used === 0.5 ? "반일" : used + "일간") + " )</td></tr>" +
+    "<tr><th>학습 형태</th><td colspan='3'>" + forms.map(function(f,i){ return (i === idx ? "■ " : "□ ") + f; }).join("　") + "</td></tr>" +
+    "<tr><th>목적지</th><td colspan='3'></td></tr>" +
+    "<tr><th>인솔자 · 관계</th><td colspan='3'></td></tr>" +
+    "<tr class='tall'><th>목적</th><td colspan='3'>" + esc($("detail").value.trim()) + "</td></tr>" +
+    "<tr class='tall'><th>체험학습 계획</th><td colspan='3'></td></tr></table>" +
+    '<div class="note">※ 신청서 제출 마감: ' + (dl ? fmtY(dl) : "-") + " / 결과보고서 제출 기한: " + fmtY(report) + "<br>" +
+    "※ 신청서를 제출하였다 하여 허가된 것이 아니며, 담임교사로부터 허가서(또는 문자)를 받은 후 실시해야 합니다.<br>" +
+    "※ 5일 이상 연속되는 체험학습 시 주 1회 이상 학생 또는 보호자가 담임교사에게 연락하여 안전·건강·체험장소를 공유하겠습니다.</div>" +
+    '<div class="sign">위와 같이 신청합니다.<br>20 　 년 　 월 　 일<br>보호자 : 　　　　 (인)<br>학생 : 　　　　 (인)</div>';
 }
 
-/* =========================================================
-   11. 관리자
-   ========================================================= */
-function fillAdmin(){
-  $("aName").value = cfg.name || "";
-  $("aLead").value = cfg.lead;
-  $("aReport").value = cfg.report;
-  $("aAnnual").value = cfg.annual || "";
-  $("aMax").value = cfg.max || "";
-  document.querySelectorAll('input[name=basis]').forEach(function(r){ r.checked = (r.value === cfg.basis); });
-  document.querySelectorAll('input[name=incl]').forEach(function(r){ r.checked = (r.value === (cfg.incl ? "1" : "0")); });
-  renderChips($("aVacChips"), cfg.vac, "vac");
-  renderChips($("aCloChips"), cfg.clo, "clo");
-  renderChips($("aHolChips"), cfg.hol, "clo");
-  renderLunar();
+/* ================= 화면 ================= */
+function screen(which){
+  ["app","cal-edit","admin"].forEach(function(id){ $(id).style.display = (id === which) ? "" : "none"; });
+  $("bar").style.display = (which === "app") ? "" : "none";
+  window.scrollTo(0,0);
 }
-
-function renderLunar(){
-  var box = $("aLunarChips"); if (!box) return;
+function chips(box, arr, kind, after){
   box.innerHTML = "";
-  var years = Object.keys(cfg.lunar).concat(Object.keys(LUNAR));
-  years.filter(function(v,i){ return years.indexOf(v) === i; }).sort().forEach(function(y){
-    var L = cfg.lunar[y] || LUNAR[y], parts = [];
-    if (L.seol) parts.push("설 " + L.seol.slice(5));
-    if (L.chuseok) parts.push("추석 " + L.chuseok.slice(5));
-    if (L.buddha) parts.push("석탄 " + L.buddha.slice(5));
+  arr.forEach(function(item,i){
+    var label = (kind === "vac") ? (item[0].slice(5).replace("-",".") + "~" + item[1].slice(5).replace("-",".")) : item.slice(5).replace("-",".");
     var c = document.createElement("span");
-    c.className = "chip"; c.style.paddingRight = "12px";
-    c.textContent = y + " · " + parts.join(" / ");
+    c.className = "chip";
+    c.innerHTML = esc(label) + '<button aria-label="삭제">&times;</button>';
+    c.querySelector("button").onclick = function(){ arr.splice(i,1); chips(box,arr,kind,after); if (after) after(); };
     box.appendChild(c);
   });
 }
 
-/* =========================================================
-   12. 이벤트 연결
-   ========================================================= */
 function boot(){
-  var had = loadConfig();
-  if (cfg.name) $("schoolTag").textContent = cfg.name;
-  renderReasons();
+  load();
+  if (cfg.name) $("kicker").textContent = cfg.name;
+  $("until").textContent = LUNAR_UNTIL + "년";
+  restoreUrl();
+  buildCal(); renderOpts();
 
-  wireCalendarInputs({vs:"vs", ve:"ve", addVac:"addVac", vacChips:"vacChips", cd:"cd", addClo:"addClo", cloChips:"cloChips"});
-  wireCalendarInputs({vs:"avs", ve:"ave", addVac:"aAddVac", vacChips:"aVacChips", cd:"acd", addClo:"aAddClo", cloChips:"aCloChips"});
-
-  $("aAddHol").onclick = function(){
-    var v = $("ahd").value;
-    if (!v) return toast("날짜를 골라주세요");
-    if (cfg.hol.indexOf(v) < 0) cfg.hol.push(v);
-    cfg.hol.sort(); $("ahd").value = "";
-    renderChips($("aHolChips"), cfg.hol, "clo");
-  };
-
-  $("go1").onclick = function(){
-    cfg.annual = parseInt($("annual").value, 10) || null;
-    cfg.used = parseInt($("used").value, 10) || 0;
-    cfg.rough = false; saveConfig(); show(1);
-  };
-  $("skipCal").onclick = function(){
-    cfg.vac = []; cfg.clo = []; cfg.rough = true; saveConfig(); show(1);
-  };
-  $("back0").onclick = function(){ show(cfg.locked ? 1 : 0); };
-  $("go2").onclick = function(){ updateReasonMsg(); drawCal(); show(2); };
-  $("back1").onclick = function(){ show(1); };
-  $("go3").onclick = function(){ buildResult(); show(3); };
-  $("back2").onclick = function(){ show(2); };
-  $("detail").addEventListener("input", updateReasonMsg);
-
-  $("prevM").onclick = function(){ cursor = new Date(cursor.getFullYear(), cursor.getMonth()-1, 1); drawCal(); };
-  $("nextM").onclick = function(){ cursor = new Date(cursor.getFullYear(), cursor.getMonth()+1, 1); drawCal(); };
-  $("h0").onclick = function(){ state.half = false; $("h0").classList.add("sel"); $("h1").classList.remove("sel"); mark(); };
-  $("h1").onclick = function(){ state.half = true; $("h1").classList.add("sel"); $("h0").classList.remove("sel"); mark(); };
-  function mark(){
-    $("h0").style.background = state.half ? "" : "var(--pine-soft)";
-    $("h1").style.background = state.half ? "var(--pine-soft)" : "";
+  if (cfg.locked && cfg.sy && cfg.sy < schoolYear(today())){
+    $("banner").innerHTML = '<div class="banner">이 링크는 <b>' + cfg.sy +
+      "학년도</b> 학사일정으로 만들어졌습니다. 학교에서 새 링크를 안내받으셨는지 확인해 주세요.</div>";
+  }
+  render();
+  if (state.start && state.end){
+    setTimeout(function(){ $("out").scrollIntoView({behavior:"smooth"}); }, 250);
   }
 
-  $("printBtn").onclick = function(){ window.print(); };
-  $("copySms").onclick = function(){
-    var t = smsText();
-    if (navigator.clipboard) navigator.clipboard.writeText(t).then(function(){ toast("문자 내용을 복사했어요"); },
-      function(){ toast("복사에 실패했어요"); });
-    else toast("이 기기에서는 복사를 지원하지 않아요");
+  $("barBtn").onclick = function(){ $("out").scrollIntoView({behavior:"smooth"}); };
+  $("detail").addEventListener("input", judge);
+
+  $("sms").onclick = function(){
+    var body = smsBody();
+    if (navigator.clipboard) navigator.clipboard.writeText(body).catch(function(){});
+    var a = document.createElement("a");
+    a.href = "sms:?body=" + encodeURIComponent(body);
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ a.remove(); toast("내용을 복사해 뒀어요"); }, 500);
   };
-  $("restart").onclick = function(){
-    state.reason = null; state.blocked = null; state.detail = ""; state.start = null; state.end = null; state.half = false;
-    $("detail").value = "";
-    document.querySelectorAll("#reasonList .choice").forEach(function(x){ x.classList.remove("sel"); });
-    $("reasonMsg").innerHTML = ""; $("go2").disabled = true;
-    updatePicked(); show(cfg.locked ? 1 : 0);
+  $("print-btn").onclick = function(){ window.print(); };
+  $("share").onclick = function(){
+    var u = shareUrl();
+    if (navigator.share){ navigator.share({title:"교외체험학습 신청 기한", url:u}).catch(function(){}); return; }
+    if (navigator.clipboard) navigator.clipboard.writeText(u).then(function(){ toast("결과 주소를 복사했어요"); },
+      function(){ toast("복사에 실패했어요"); });
+    else toast("주소창의 주소를 복사해 주세요");
+  };
+  $("reset").onclick = function(){
+    state.start = null; state.end = null;
+    state.attend = null; state.periods = null; state.miss = null;
+    paint(); render(); window.scrollTo({top:0,behavior:"smooth"});
   };
 
-  $("enterAdmin").onclick = function(){ fillAdmin(); show("admin"); };
-  $("leaveAdmin").onclick = function(){ show(cfg.locked ? 1 : 0); };
-  $("makeLink").onclick = function(){
+  /* 학사일정 */
+  function refresh(){ holCache = {}; buildCal(); render(); save(); }
+  $("addVac").onclick = function(){
+    var a = $("vs").value, b = $("ve").value;
+    if (!a || !b) return toast("시작일과 종료일을 모두 골라주세요");
+    if (a > b) return toast("종료일이 시작일보다 빨라요");
+    cfg.vac.push([a,b]); $("vs").value = ""; $("ve").value = "";
+    chips($("vacChips"), cfg.vac, "vac"); save();
+  };
+  $("addClo").onclick = function(){
+    var v = $("cd").value;
+    if (!v) return toast("날짜를 골라주세요");
+    if (cfg.clo.indexOf(v) < 0) cfg.clo.push(v);
+    cfg.clo.sort(); $("cd").value = "";
+    chips($("cloChips"), cfg.clo, "clo"); save();
+  };
+  $("doneCal").onclick = function(){ cfg.asked = true; refresh(); screen("app"); $("out").scrollIntoView(); };
+  $("skipCal").onclick = function(){ cfg.asked = true; save(); screen("app"); };
+
+  /* 관리자 */
+  $("aAddVac").onclick = function(){
+    var a = $("avs").value, b = $("ave").value;
+    if (!a || !b) return toast("시작일과 종료일을 모두 골라주세요");
+    cfg.vac.push([a,b]); $("avs").value = ""; $("ave").value = "";
+    chips($("aVacChips"), cfg.vac, "vac");
+  };
+  $("aAddClo").onclick = function(){
+    var v = $("acd").value; if (!v) return toast("날짜를 골라주세요");
+    if (cfg.clo.indexOf(v) < 0) cfg.clo.push(v);
+    cfg.clo.sort(); $("acd").value = ""; chips($("aCloChips"), cfg.clo, "clo");
+  };
+  $("aAddHol").onclick = function(){
+    var v = $("ahd").value; if (!v) return toast("날짜를 골라주세요");
+    if (cfg.hol.indexOf(v) < 0) cfg.hol.push(v);
+    cfg.hol.sort(); $("ahd").value = ""; chips($("aHolChips"), cfg.hol, "clo");
+  };
+  $("mk").onclick = function(){
     cfg.name = $("aName").value.trim();
-    cfg.lead = parseInt($("aLead").value, 10) || 3;
-    cfg.report = parseInt($("aReport").value, 10) || 7;
-    cfg.annual = parseInt($("aAnnual").value, 10) || null;
-    cfg.max = parseInt($("aMax").value, 10) || null;
-    document.querySelectorAll('input[name=basis]').forEach(function(r){ if (r.checked) cfg.basis = r.value; });
-    document.querySelectorAll('input[name=incl]').forEach(function(r){ if (r.checked) cfg.incl = (r.value === "1"); });
-    [["aSeol","seol"],["aChu","chuseok"],["aBud","buddha"]].forEach(function(p){
-      var v = $(p[0]).value; if (!v) return;
-      var y = v.slice(0,4);
-      if (!cfg.lunar[y]) cfg.lunar[y] = Object.assign({}, LUNAR[y] || {});
-      cfg.lunar[y][p[1]] = v;
+    cfg.lead = parseInt($("aLead").value,10) || 3;
+    cfg.report = parseInt($("aReport").value,10) || 7;
+    cfg.annual = parseInt($("aAnnual").value,10) || null;
+    cfg.max = parseInt($("aMax").value,10) || null;
+    cfg.sy = parseInt($("aSy").value,10) || schoolYear(today());
+    var url = location.origin + location.pathname + "?s=" + b64e({
+      name:cfg.name, lead:cfg.lead, report:cfg.report, annual:cfg.annual, max:cfg.max,
+      sy:cfg.sy, half:cfg.half, vac:cfg.vac, clo:cfg.clo, hol:cfg.hol, lunar:cfg.lunar
     });
-    holCache = {}; renderLunar();
-    var payload = {name:cfg.name, lead:cfg.lead, basis:cfg.basis, incl:cfg.incl, report:cfg.report,
-                   annual:cfg.annual, max:cfg.max, vac:cfg.vac, clo:cfg.clo, hol:cfg.hol, lunar:cfg.lunar};
-    var url = location.origin + location.pathname + "?s=" + b64e(payload);
     $("linkOut").value = url; $("linkBox").style.display = "";
-    if (cfg.name) $("schoolTag").textContent = cfg.name;
-    saveConfig();
+    holCache = {};
   };
   $("copyLink").onclick = function(){
-    var t = $("linkOut").value;
-    if (navigator.clipboard) navigator.clipboard.writeText(t).then(function(){ toast("링크를 복사했어요"); });
+    if (navigator.clipboard) navigator.clipboard.writeText($("linkOut").value).then(function(){ toast("복사했어요"); });
     else { $("linkOut").select(); toast("길게 눌러 복사해 주세요"); }
   };
 
-  renderChips($("vacChips"), cfg.vac, "vac");
-  renderChips($("cloChips"), cfg.clo, "clo");
-  if (cfg.annual) $("annual").value = cfg.annual;
-  if (cfg.used) $("used").value = cfg.used;
+  chips($("vacChips"), cfg.vac, "vac");
+  chips($("cloChips"), cfg.clo, "clo");
 
-  show(cfg.locked ? 1 : (had && (cfg.vac.length || cfg.clo.length || cfg.rough) ? 1 : 0));
+  var params = new URLSearchParams(location.search);
+  if (params.get("admin") === "1" || location.hash === "#admin"){
+    $("aSy").value = cfg.sy || schoolYear(today());
+    Array.prototype.forEach.call($("aHalf").children, function(b){
+      b.classList.toggle("on", (b.dataset.v === "1") === (cfg.half !== false));
+      b.onclick = function(){
+        cfg.half = (b.dataset.v === "1");
+        Array.prototype.forEach.call($("aHalf").children, function(c){ c.classList.toggle("on", c === b); });
+      };
+    });
+    chips($("aVacChips"), cfg.vac, "vac");
+    chips($("aCloChips"), cfg.clo, "clo");
+    chips($("aHolChips"), cfg.hol, "clo");
+    screen("admin");
+  }
 }
 
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
