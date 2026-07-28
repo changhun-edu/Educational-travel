@@ -44,12 +44,16 @@ header p.lede{font-size:14px;color:var(--ink-2);margin:10px 0 0}
 /* ---------- calendar ---------- */
 .dowbar{
   position:sticky;top:0;z-index:5;background:var(--paper);
-  display:grid;grid-template-columns:repeat(7,1fr);text-align:center;
-  font-size:11px;color:var(--ink-3);padding:10px 0 8px;
+  display:grid;grid-template-columns:repeat(7,1fr);align-items:center;text-align:center;
+  font-size:11px;color:var(--ink-3);height:36px;
   border-bottom:1px solid var(--line);
 }
-.mon{padding:22px 0 6px}
+.mon{
+  position:sticky;top:36px;z-index:4;background:var(--paper);
+  padding:16px 0 8px;
+}
 .mon b{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--ink-2)}
+#sentinel{height:1px}
 .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
 .d{
   position:relative;height:48px;min-height:44px;border:none;background:none;
@@ -153,6 +157,9 @@ input:focus,textarea:focus,summary:focus-visible,.d:focus-visible,button:focus-v
 .card + .card{margin-top:10px}
 
 /* ---------- reason ---------- */
+p.range{font-size:12.5px;color:var(--ink-3);margin:6px 0 0;letter-spacing:.01em}
+.calend{padding:22px 4px 4px;text-align:center;font-size:12.5px;color:var(--ink-3);line-height:1.7}
+.calend b{color:var(--ink-2);font-weight:600}
 .banner{background:#FBF3E3;border:1px solid #E7D3A8;border-radius:12px;padding:13px 15px;
   margin:0 0 6px;font-size:13.5px;color:#6E4E12;line-height:1.6}
 .banner b{font-weight:600}
@@ -199,6 +206,7 @@ input:focus,textarea:focus,summary:focus-visible,.d:focus-visible,button:focus-v
     <p class="kicker" id="kicker">학교(원)장 허가 교외체험학습</p>
     <h1>체험학습,<br>언제까지 신청해야 할까요?</h1>
     <p class="lede">다녀올 날을 달력에서 고르면 신청 기한을 알려드립니다.</p>
+    <p class="range" id="range"></p>
   </header>
 
   <div id="banner"></div>
@@ -525,7 +533,22 @@ function countSchool(a,b){
 
 /* ================= 상태 ================= */
 var state = { start:null, end:null, reason:null, attend:null, periods:null, miss:null };
-var cells = {}, MONTHS = 10;
+var cells = {};
+
+/* 달력은 이번 달부터 이번 학년도 마지막 달(이듬해 2월)까지만 보여준다.
+   다음 학년도는 학사일정이 아직 정해지지 않아 계산 근거가 없다. */
+function calRange(){
+  var t = today(), sy = schoolYear(t);
+  return {
+    sy: sy,
+    from: new Date(t.getFullYear(), t.getMonth(), 1),
+    to: new Date(sy + 1, 2, 0)
+  };
+}
+function inRange(d){
+  var r = calRange();
+  return d.getTime() >= r.from.getTime() && d.getTime() <= r.to.getTime();
+}
 
 function $(id){ return document.getElementById(id); }
 function toast(m){
@@ -535,36 +558,100 @@ function toast(m){
 function esc(s){ return String(s).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
 
 /* ================= 달력 ================= */
+var cal = { from:null, sy:0, total:0, drawn:0, host:null, sentinel:null, obs:null, done:false };
+
+function monthOffset(a, b){
+  return (b.getFullYear()*12 + b.getMonth()) - (a.getFullYear()*12 + a.getMonth());
+}
+
 function buildCal(){
-  var host = $("cal"); host.innerHTML = ""; cells = {};
-  var t = today(), cur = new Date(t.getFullYear(), t.getMonth(), 1);
-  var tk = key(t);
-  for (var mi=0; mi<MONTHS; mi++){
-    var y = cur.getFullYear(), m = cur.getMonth();
-    var head = document.createElement("div");
-    head.className = "mon"; head.innerHTML = "<b>" + y + "년 " + (m+1) + "월</b>";
-    host.appendChild(head);
-    var g = document.createElement("div"); g.className = "grid";
-    var first = new Date(y,m,1), last = new Date(y,m+1,0);
-    for (var p=0;p<first.getDay();p++){
-      var pd = document.createElement("div"); pd.className = "d pad"; g.appendChild(pd);
+  var r = calRange(), host = $("cal");
+  host.innerHTML = ""; cells = {};
+  if (cal.obs){ cal.obs.disconnect(); cal.obs = null; }
+
+  cal.from = new Date(r.from.getFullYear(), r.from.getMonth(), 1);
+  cal.sy = r.sy;
+  cal.total = monthOffset(cal.from, r.to) + 1;
+  cal.drawn = 0; cal.host = host; cal.done = false;
+  $("range").textContent = r.sy + "학년도 · " + (r.sy + 1) + "년 2월까지";
+
+  var sent = document.createElement("div");
+  sent.id = "sentinel";
+  cal.sentinel = sent;
+  host.appendChild(sent);
+
+  drawMonths(3);
+
+  if (!cal.done){
+    if (window.IntersectionObserver){
+      cal.obs = new IntersectionObserver(function(es){
+        if (es[0].isIntersecting) drawMonths(3);
+      }, {rootMargin:"500px 0px"});
+      cal.obs.observe(sent);
+    } else {
+      drawMonths(cal.total);
     }
-    for (var i=1;i<=last.getDate();i++){
-      (function(y,m,i){
-        var d = new Date(y,m,i), k = key(d);
-        var b = document.createElement("button");
-        b.type = "button"; b.textContent = i; b.dataset.k = k;
-        var reason = why(d), past = d.getTime() < t.getTime();
-        b.className = "d" + ((reason || past) ? " off" : "") + (k === tk ? " today" : "");
-        b.setAttribute("aria-label", fmtY(d) + (reason ? " " + reason : ""));
-        b.onclick = function(){ tap(d, reason, past); };
-        cells[k] = b; g.appendChild(b);
-      })(y,m,i);
-    }
-    host.appendChild(g);
-    cur = new Date(y, m+1, 1);
   }
+}
+
+function drawMonths(n){
+  for (var i=0; i<n && cal.drawn < cal.total; i++){
+    drawMonth(new Date(cal.from.getFullYear(), cal.from.getMonth() + cal.drawn, 1));
+    cal.drawn++;
+  }
+  if (cal.drawn >= cal.total && !cal.done) finishCal();
   paint();
+}
+
+/* 선택한 날짜가 아직 안 그려진 달에 있으면 거기까지 채운다 (공유 주소로 들어온 경우) */
+function ensureDrawn(d){
+  var need = monthOffset(cal.from, d) + 1;
+  if (need > cal.drawn) drawMonths(need - cal.drawn);
+}
+
+function finishCal(){
+  cal.done = true;
+  if (cal.obs){ cal.obs.disconnect(); cal.obs = null; }
+  if (cal.sentinel && cal.sentinel.parentNode) cal.sentinel.remove();
+  var tail = document.createElement("p");
+  tail.className = "calend";
+  tail.innerHTML = "<b>" + cal.sy + "학년도는 여기까지입니다.</b><br>" +
+    (cal.sy + 1) + "년 3월부터는 새 학년도라, 학사일정이 정해진 뒤에 안내됩니다.";
+  cal.host.appendChild(tail);
+}
+
+function place(node){
+  if (cal.sentinel && cal.sentinel.parentNode) cal.host.insertBefore(node, cal.sentinel);
+  else cal.host.appendChild(node);
+}
+
+function drawMonth(first){
+  var y = first.getFullYear(), m = first.getMonth();
+  var t = today(), tk = key(t);
+  var head = document.createElement("div");
+  head.className = "mon";
+  head.innerHTML = "<b>" + y + "년 " + (m + 1) + "월</b>";
+  place(head);
+
+  var g = document.createElement("div");
+  g.className = "grid";
+  var last = new Date(y, m + 1, 0);
+  for (var p = 0; p < first.getDay(); p++){
+    var pd = document.createElement("div"); pd.className = "d pad"; g.appendChild(pd);
+  }
+  for (var i = 1; i <= last.getDate(); i++){
+    (function(i){
+      var d = new Date(y, m, i), k = key(d);
+      var b = document.createElement("button");
+      b.type = "button"; b.textContent = i; b.dataset.k = k;
+      var reason = why(d), past = d.getTime() < t.getTime();
+      b.className = "d" + ((reason || past) ? " off" : "") + (k === tk ? " today" : "");
+      b.setAttribute("aria-label", fmtY(d) + (reason ? " " + reason : ""));
+      b.onclick = function(){ tap(d, reason, past); };
+      cells[k] = b; g.appendChild(b);
+    })(i);
+  }
+  place(g);
 }
 
 function paint(){
@@ -680,7 +767,9 @@ function restoreUrl(){
   if (d && /^\d{4}-\d{2}-\d{2}_\d{4}-\d{2}-\d{2}$/.test(d)){
     var t = d.split("_");
     var a = parse(t[0]), b = parse(t[1]);
-    if (isSchool(a) && isSchool(b) && b.getTime() >= a.getTime()){ state.start = a; state.end = b; }
+    if (isSchool(a) && isSchool(b) && b.getTime() >= a.getTime() && inRange(a) && inRange(b)){
+      state.start = a; state.end = b;
+    }
   }
   var av = (p.get("a") || "").split(".");
   if (["no","yes"].indexOf(av[0]) >= 0) state.attend = av[0];
@@ -863,6 +952,7 @@ function boot(){
   $("until").textContent = LUNAR_UNTIL + "년";
   restoreUrl();
   buildCal(); renderOpts();
+  if (state.end) ensureDrawn(state.end);
 
   if (cfg.locked && cfg.sy && cfg.sy < schoolYear(today())){
     $("banner").innerHTML = '<div class="banner">이 링크는 <b>' + cfg.sy +
@@ -901,7 +991,11 @@ function boot(){
   };
 
   /* 학사일정 */
-  function refresh(){ holCache = {}; buildCal(); render(); save(); }
+  function refresh(){
+    holCache = {}; buildCal();
+    if (state.end) ensureDrawn(state.end);
+    render(); save();
+  }
   $("addVac").onclick = function(){
     var a = $("vs").value, b = $("ve").value;
     if (!a || !b) return toast("시작일과 종료일을 모두 골라주세요");
