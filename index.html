@@ -26,6 +26,7 @@
   --bar:78px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none !important}
 html,body{margin:0;padding:0}
 body{
   background:var(--paper);color:var(--ink);font-family:var(--sans);
@@ -172,6 +173,12 @@ input:focus,textarea:focus,summary:focus-visible,.d:focus-visible,button:focus-v
 .srch::after{content:"";position:absolute;left:27px;top:50%;width:7px;height:2px;
   margin-top:3px;background:var(--ink-3);transform:rotate(45deg)}
 .hits{margin-top:10px}
+.scope{display:flex;align-items:center;gap:7px;margin:12px 0 0}
+.scope b{display:inline-flex;align-items:center;gap:7px;background:var(--pine);color:#fff;
+  border-radius:999px;padding:7px 8px 7px 14px;font-size:13.5px;font-weight:500}
+.scope b button{background:none;border:none;color:#fff;font-size:17px;line-height:1;
+  cursor:pointer;padding:0 6px;min-height:26px}
+.browse{font-size:12.5px;color:var(--ink-3);margin:22px 0 0}
 .offgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:7px;margin-top:12px}
 .off{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 8px;
   font:inherit;cursor:pointer;min-height:66px;display:flex;flex-direction:column;
@@ -309,15 +316,17 @@ p.range{font-size:12.5px;color:var(--ink-3);margin:6px 0 0;letter-spacing:.01em}
 <!-- 학교 선택 -->
 <div class="wrap" id="pick" style="display:none">
   <header>
-    <div class="whoami"><b id="pickKicker">교외체험학습</b><button id="backOffice" hidden>지역 다시 고르기</button></div>
-    <h1 id="pickTitle">어느 지역인가요?</h1>
-    <p class="lede" id="pickLede">시도교육청을 먼저 골라주세요. 한 번만 고르면 기억합니다.</p>
+    <p class="kicker">교외체험학습</p>
+    <h1>어느 학교에<br>다니시나요?</h1>
+    <p class="lede">학교 이름을 넣어보세요. 초성으로도 찾을 수 있습니다.</p>
   </header>
-  <div class="offgrid" id="offices"></div>
-  <div id="schoolStep" hidden>
-    <div class="srch"><input id="q" type="search" placeholder="학교 이름 또는 초성" autocomplete="off" aria-label="학교 검색"></div>
-    <p class="src" id="pickHint"></p>
-    <div class="hits" id="hits"></div>
+  <div class="srch"><input id="q" type="search" placeholder="예: 운남초 또는 ㅇㄴㅊ" autocomplete="off" aria-label="학교 검색"></div>
+  <div class="scope" id="scope" hidden></div>
+  <p class="src" id="pickHint"></p>
+  <div class="hits" id="hits"></div>
+  <div id="offWrap">
+    <p class="browse">지역으로 찾기</p>
+    <div class="offgrid" id="offices"></div>
   </div>
   <button class="btn link" id="skipPick">학교가 목록에 없어요</button>
   <div class="foot"></div>
@@ -551,7 +560,7 @@ function load(){
 var DATA = "data/";
 var PROXY = "";          // 예: "https://neis-relay.내계정.workers.dev"
 
-var IDX = null, LIST = null, CAL = null, CUROFF = "";
+var IDX = null, LIST = null, CAL = null, CUROFF = "", ALL = null, SCOPE = "";
 
 async function getJSON(u){
   try{ var r = await fetch(u, {cache:"no-cache"}); if (!r.ok) return null; return await r.json(); }
@@ -582,6 +591,21 @@ async function loadPart(kind, off){
     if (j){ PAT = (names[i] === suffixed) ? 1 : 0; return j; }
   }
   return null;
+}
+
+/* 전국 통합 색인. 첫 검색 때 한 번만 모은다.
+   첫 교육청은 순차로 받아 파일 이름 방식을 학습한 뒤, 나머지를 한꺼번에 받는다. */
+async function loadAll(){
+  if (ALL) return ALL;
+  var codes = ((IDX && IDX.offices) || []).map(function(o){ return o.code; });
+  if (!codes.length) return null;
+  var first = await loadPart("idx", codes[0]);
+  var rest = await Promise.all(codes.slice(1).map(function(c){ return loadPart("idx", c); }));
+  ALL = [];
+  [first].concat(rest).forEach(function(p){
+    if (p) p.forEach(function(r){ ALL.push(r); });
+  });
+  return ALL;
 }
 
 async function loadOffice(off){
@@ -629,14 +653,10 @@ async function refreshSchool(id){
 }
 
 /* ---------- 선택 화면 ---------- */
-function showPick(step){
-  $("offices").hidden = step !== "office";
-  $("schoolStep").hidden = step === "office";
-  $("backOffice").hidden = step === "office";
-  $("pickTitle").textContent = step === "office" ? "어느 지역인가요?" : "학교를 찾아주세요";
-  $("pickLede").textContent = step === "office"
-    ? "시도교육청을 먼저 골라주세요. 한 번만 고르면 기억합니다."
-    : "이름 일부만 넣거나 초성으로도 찾을 수 있어요.";
+function showPick(){
+  renderScope();
+  renderOffices();
+  renderHits();
   screen("pick");
 }
 
@@ -662,34 +682,72 @@ function renderOffices(){
       b.disabled = true;
       var ok = await loadOffice(b.dataset.off);
       b.disabled = false;
-      if (!ok){ toast(b.textContent.replace(/\d+$/,"") + " 자료가 아직 준비되지 않았어요"); return; }
-      $("q").value = ""; renderHits(); showPick("school"); $("q").focus();
+      if (!ok){ toast(b.querySelector("b").textContent + " 자료가 아직 준비되지 않았어요"); return; }
+      SCOPE = b.dataset.off;
+      renderScope();
+      $("q").value = ""; renderHits(); $("q").focus();
     };
   });
 }
 
-function renderHits(){
+function renderScope(){
+  var el = $("scope");
+  if (!SCOPE){ el.hidden = true; el.innerHTML = ""; return; }
+  var o = (IDX.offices || []).filter(function(x){ return x.code === SCOPE; })[0] || {code:SCOPE};
+  el.hidden = false;
+  el.innerHTML = "<b>" + esc(shortName(o)) + ' 안에서 찾는 중<button aria-label="지역 해제">&times;</button></b>';
+  el.querySelector("button").onclick = function(){
+    SCOPE = ""; renderScope(); renderHits();
+  };
+}
+
+function regionOf(id){
+  var c = officeOf(id);
+  var o = ((IDX && IDX.offices) || []).filter(function(x){ return x.code === c; })[0];
+  return o ? shortName(o) : c;
+}
+
+var searchSeq = 0;
+async function renderHits(){
   var q = $("q").value.trim().replace(/\s/g, ""), box = $("hits");
+  var seq = ++searchSeq;
+
+  $("offWrap").hidden = !!q || !!SCOPE;
+
   if (!q){
     box.innerHTML = "";
-    $("pickHint").textContent = LIST ? LIST.length + "개교 · " +
-      ((IDX && IDX.sy) || "") + "학년도 기준" : "";
+    $("pickHint").textContent = SCOPE && LIST
+      ? LIST.length + "개교 · 이름을 넣어보세요"
+      : (IDX ? "전국 " + (IDX.offices||[]).reduce(function(a,b){ return a+b.count; },0) +
+               "개교 · " + IDX.sy + "학년도 기준" : "");
     return;
   }
-  var hits = [];
-  for (var i=0;i<LIST.length && hits.length<40;i++){
-    var nm = LIST[i][1];
-    if (nm.replace(/\s/g,"").indexOf(q) >= 0 || initials(nm).indexOf(q) >= 0) hits.push(LIST[i]);
+
+  var pool = SCOPE ? LIST : ALL;
+  if (!pool){
+    $("pickHint").textContent = "학교 목록을 불러오는 중…";
+    box.innerHTML = "";
+    pool = await loadAll();
+    if (seq !== searchSeq) return;
+    if (!pool){ $("pickHint").textContent = "학교 목록을 불러오지 못했어요"; return; }
   }
+
+  var hits = [];
+  for (var i=0;i<pool.length && hits.length<40;i++){
+    var nm = pool[i][1];
+    if (nm.replace(/\s/g,"").indexOf(q) >= 0 || initials(nm).indexOf(q) >= 0) hits.push(pool[i]);
+  }
+  $("pickHint").textContent = hits.length ? hits.length + (hits.length >= 40 ? "건 이상" : "건") : "";
   if (!hits.length){
     box.innerHTML = '<p class="empty">찾는 학교가 없습니다.<br>이름 일부만 넣어보시거나 초성으로 찾아보세요.</p>';
     return;
   }
   box.innerHTML = hits.map(function(h){
-    var c = CAL && CAL[h[0]], q = c ? (c.q || "ok") : "none";
-    var tag = q === "ok" ? ""
-      : '<span class="q ' + q + '">' + (q === "none" ? "학사일정 없음" : "학사일정 일부") + "</span>";
-    return '<button type="button" class="hit" data-id="' + h[0] + '">' + esc(h[1]) + tag + "</button>";
+    var c = (SCOPE && CAL) ? CAL[h[0]] : null;
+    var tag = (SCOPE && CAL && !c) ? '<span class="q none">학사일정 없음</span>'
+            : (c && c.q !== "ok") ? '<span class="q partial">학사일정 일부</span>' : "";
+    var reg = SCOPE ? "" : '<span class="q" style="background:#EEF2F0;color:var(--ink-2)">' + esc(regionOf(h[0])) + "</span>";
+    return '<button type="button" class="hit" data-id="' + h[0] + '">' + esc(h[1]) + reg + tag + "</button>";
   }).join("");
   Array.prototype.forEach.call(box.querySelectorAll(".hit"), function(b){
     b.onclick = async function(){
@@ -1198,9 +1256,8 @@ async function boot(){
   var wantsAdmin = params0.get("admin") === "1" || location.hash === "#admin";
 
   /* 설정 링크(?s=)가 있으면 그대로. 아니면 학교 목록을 찾아본다. */
-  $("q").addEventListener("input", renderHits);
+  $("q").addEventListener("input", function(){ renderHits(); });
   $("skipPick").onclick = function(){ cfg.quality = ""; startApp(); };
-  $("backOffice").onclick = function(){ showPick("office"); };
 
   if (!cfg.locked && !wantsAdmin){
     IDX = await getJSON(DATA + "index.json");
@@ -1208,8 +1265,7 @@ async function boot(){
       var want = params0.get("sc");
       if (!want){ try{ want = localStorage.getItem("gcl_sc"); }catch(e){} }
       if (!want || !(await applySchool(want))){
-        renderOffices();
-        showPick("office");
+        showPick();
         wire();
         return;
       }
@@ -1247,7 +1303,7 @@ function wire(){
     var u = new URL(location.href);
     u.searchParams.delete("sc"); u.searchParams.delete("d"); u.searchParams.delete("a");
     history.replaceState(null, "", u.toString());
-    $("q").value = ""; renderOffices(); showPick("office");
+    $("q").value = ""; SCOPE = ""; showPick();
   };
 
   $("barBtn").onclick = function(){ $("out").scrollIntoView({behavior:"smooth"}); };
