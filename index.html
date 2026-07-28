@@ -3,8 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>체험학습 신청, 언제까지?</title>
-<meta name="description" content="학교(원)장 허가 교외체험학습 신청 기한을 달력에서 바로 확인합니다">
+<title>학교장 허가 교외체험학습 신청 기한 계산</title>
+<meta name="description" content="다녀올 날을 고르면 신청서를 언제까지 내야 하는지 알려드립니다. 토·일·공휴일에 학교별 방학·재량휴업일까지 빼고 계산합니다.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="교외체험학습 신청 기한 계산">
+<meta property="og:title" content="신청서, 언제까지 내야 할까요?">
+<meta property="og:description" content="학교장 허가 교외체험학습 신청 기한을 계산해 드립니다. 토·일·공휴일에 학교별 방학·재량휴업일까지 빼고 셉니다.">
+<!-- 배포 후 아래 og:image 를 전체 주소로 바꾸세요.
+     카카오톡·페이스북은 상대 경로를 읽지 못합니다.
+     예: https://계정.github.io/리포/og.png -->
+<meta property="og:image" content="og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231B5E4B'/%3E%3Crect x='7' y='9' width='18' height='16' rx='2.5' fill='%23fff'/%3E%3Crect x='7' y='9' width='18' height='4' rx='2.5' fill='%23C9DBD3'/%3E%3Cellipse cx='16' cy='19' rx='6' ry='5' fill='none' stroke='%23A83232' stroke-width='2'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
@@ -40,7 +53,8 @@ body{
 header{padding:28px 0 14px}
 header p.kicker{font-size:12px;letter-spacing:.14em;color:var(--ink-3);margin:0 0 8px}
 header h1{font-family:var(--serif);font-weight:700;font-size:26px;line-height:1.35;margin:0;letter-spacing:-.02em}
-header p.lede{font-size:14px;color:var(--ink-2);margin:10px 0 0}
+header p.lede{font-size:14px;color:var(--ink-2);margin:12px 0 0;line-height:1.7}
+header p.lede b{color:var(--ink);font-weight:600}
 
 /* ---------- calendar ---------- */
 .dowbar{
@@ -56,19 +70,21 @@ header p.lede{font-size:14px;color:var(--ink-2);margin:10px 0 0}
 .mon b{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--ink-2)}
 #sentinel{height:1px}
 .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+/* 고를 수 있는 날만 카드로 떠 있고, 못 고르는 날은 바탕에 잠긴다.
+   방학·공휴일·주말·지난 날은 전부 후자다. */
 .d{
-  position:relative;height:48px;min-height:44px;border:none;background:none;
-  font:inherit;font-size:15.5px;color:var(--ink);border-radius:11px;
+  position:relative;height:48px;min-height:44px;border:1px solid var(--line);
+  background:var(--card);font:inherit;font-size:15.5px;color:var(--ink);border-radius:11px;
   cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
 }
 .d.pad{visibility:hidden;pointer-events:none}
-.d.off{color:var(--off)}
+.d.off{background:none;border-color:transparent;color:var(--off)}
 .d.today::after{
   content:"";position:absolute;bottom:7px;left:50%;transform:translateX(-50%);
   width:4px;height:4px;border-radius:50%;background:var(--ink-3);
 }
-.d.rng{background:var(--pine-soft);border-radius:0}
-.d.sel{background:var(--pine);color:#fff;font-weight:600;border-radius:11px}
+.d.rng{background:var(--pine-soft);border-color:var(--pine-soft);border-radius:0}
+.d.sel{background:var(--pine);border-color:var(--pine);color:#fff;font-weight:600;border-radius:11px}
 .d.sel.a{border-radius:11px 0 0 11px}
 .d.sel.b{border-radius:0 11px 11px 0}
 .d.sel.today::after{background:rgba(255,255,255,.7)}
@@ -159,6 +175,7 @@ input:focus,textarea:focus,summary:focus-visible,.d:focus-visible,button:focus-v
   width:21px;height:21px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:none}
 .step b{font-size:15.5px;font-weight:600}
 .step.wait i{background:var(--off)}
+#msg{font-size:14.5px;line-height:1.75;min-height:150px;background:var(--card)}
 .btn.link{background:transparent;color:var(--pine);border:none;font-size:14px;padding:10px;min-height:44px;text-decoration:underline;text-underline-offset:3px}
 .two{display:flex;gap:8px;margin-top:10px}
 .two > *{flex:1}
@@ -170,6 +187,7 @@ input:focus,textarea:focus,summary:focus-visible,.d:focus-visible,button:focus-v
 .card + .card{margin-top:10px}
 
 /* ---------- reason ---------- */
+p.flabel{font-size:12.5px;color:var(--ink-2);font-weight:500;margin:22px 0 7px}
 .srch{position:relative;margin-bottom:6px}
 .srch input{width:100%;font:inherit;font-size:16px;padding:14px 14px 14px 42px;min-height:52px;
   border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink)}
@@ -185,12 +203,12 @@ input:focus,textarea:focus,summary:focus-visible,.d:focus-visible,button:focus-v
   cursor:pointer;padding:0 6px;min-height:26px}
 .browse{font-size:12.5px;color:var(--ink-3);margin:22px 0 0}
 .offgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:7px;margin-top:12px}
-.off{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 8px;
+.region{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 8px;
   font:inherit;cursor:pointer;min-height:66px;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:3px;color:var(--ink)}
-.off:active{background:#F5F8F6}
-.off b{font-size:15.5px;font-weight:500;letter-spacing:-.02em}
-.off span{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.region:active{background:#F5F8F6}
+.region b{font-size:15.5px;font-weight:500;letter-spacing:-.02em}
+.region span{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .hit{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--card);
   border:1px solid var(--line);border-radius:12px;padding:15px 16px;margin-bottom:7px;
   font:inherit;font-size:16px;color:var(--ink);cursor:pointer;min-height:54px}
@@ -250,8 +268,8 @@ p.range{font-size:12.5px;color:var(--ink-3);margin:6px 0 0;letter-spacing:.01em}
 
 <div class="wrap" id="app">
   <header>
-    <div class="whoami"><b id="kicker">학교(원)장 허가 교외체험학습</b><button id="chgSchool" hidden>학교 바꾸기</button></div>
-    <h1>체험학습,<br>언제까지 신청해야 할까요?</h1>
+    <div class="whoami"><b id="kicker">학교장 허가 교외체험학습</b><button id="chgSchool" hidden>학교 바꾸기</button></div>
+    <h1>신청서,<br>언제까지 내야 할까요?</h1>
     <p class="lede">다녀올 날을 달력에서 고르면 신청 기한을 알려드립니다.</p>
     <p class="range" id="range"></p>
   </header>
@@ -293,12 +311,8 @@ p.range{font-size:12.5px;color:var(--ink-3);margin:6px 0 0;letter-spacing:.01em}
 
     <div class="step wait" id="step2"><i>2</i><b>담임 선생님께 알리기</b></div>
     <p class="src" style="margin:0 0 10px">학부모서비스로 신청한 뒤에도 <b>담임 선생님께 신청 사실을 따로 알려야 합니다.</b></p>
-    <button class="btn outline" id="sms">담임 선생님께 문자 보내기</button>
-
-    <div class="two" style="margin-top:18px">
-      <button class="btn ghost" id="share">결과 링크 복사</button>
-      <button class="btn ghost" id="reset">날짜 다시 고르기</button>
-    </div>
+    <textarea id="msg" rows="6" aria-label="담임 선생님께 보낼 내용"></textarea>
+    <button class="btn outline" id="copyMsg" style="margin-top:10px">내용 복사하기</button>
 
     <details style="margin-top:20px">
       <summary>꼭 알아두세요</summary>
@@ -321,10 +335,12 @@ p.range{font-size:12.5px;color:var(--ink-3);margin:6px 0 0;letter-spacing:.01em}
 <!-- 학교 선택 -->
 <div class="wrap" id="pick" style="display:none">
   <header>
-    <p class="kicker">교외체험학습</p>
-    <h1>어느 학교에<br>다니시나요?</h1>
-    <p class="lede">학교 이름을 넣어보세요. 초성으로도 찾을 수 있습니다.</p>
+    <p class="kicker">학교장 허가 교외체험학습</p>
+    <h1>신청서,<br>언제까지 내야 할까요?</h1>
+    <p class="lede">체험학습 시작 <b>3일 전</b>까지 내야 하는데, 토·일·공휴일은 물론
+      <b>학교 방학과 재량휴업일</b>까지 빼고 세야 합니다. 학교마다 달라 손으로는 헷갈립니다.</p>
   </header>
+  <p class="flabel">다니는 학교</p>
   <div class="srch"><input id="q" type="search" placeholder="예: 운남초 또는 ㅇㄴㅊ" autocomplete="off" aria-label="학교 검색"></div>
   <div class="scope" id="scope" hidden></div>
   <p class="src" id="pickHint"></p>
@@ -334,7 +350,11 @@ p.range{font-size:12.5px;color:var(--ink-3);margin:6px 0 0;letter-spacing:.01em}
     <div class="offgrid" id="offices"></div>
   </div>
   <button class="btn link" id="skipPick">학교가 목록에 없어요</button>
-  <div class="foot"></div>
+  <div class="foot">
+    <p>초·중등교육법 시행령 제48조 제5항 · 유아교육법 시행령 제12조 제2항<br>
+      학교생활기록 작성 및 관리지침(교육부 훈령 제555호)</p>
+    <p style="margin-top:8px" id="source"></p>
+  </div>
 </div>
 
 <!-- 학사일정 입력 -->
@@ -669,6 +689,11 @@ async function refreshSchool(id){
 
 /* ---------- 선택 화면 ---------- */
 function showPick(){
+  if (IDX && $("source")){
+    var n = (IDX.offices || []).reduce(function(a,b){ return a + b.count; }, 0);
+    $("source").innerHTML = "학사일정 출처: 나이스 교육정보 개방 포털 · " +
+      esc(IDX.fetched || "") + " 기준 · " + IDX.sy + "학년도 " + n.toLocaleString() + "개교";
+  }
   renderScope();
   renderOffices();
   renderHits();
@@ -689,10 +714,10 @@ function renderOffices(){
   var box = $("offices");
   if (!IDX || !IDX.offices){ box.innerHTML = ""; return; }
   box.innerHTML = IDX.offices.map(function(o){
-    return '<button type="button" class="off" data-off="' + o.code + '">' +
+    return '<button type="button" class="region" data-off="' + o.code + '">' +
            "<b>" + esc(shortName(o)) + "</b><span>" + o.count + "</span></button>";
   }).join("");
-  Array.prototype.forEach.call(box.querySelectorAll(".off"), function(b){
+  Array.prototype.forEach.call(box.querySelectorAll(".region"), function(b){
     b.onclick = async function(){
       b.disabled = true;
       var ok = await loadOffice(b.dataset.off);
@@ -1202,6 +1227,8 @@ function render(){
   renderHalf();
   $("out").classList.add("on");
   buildPrint(dl, report, ch);
+  fillMsg();
+  updateBarBtn();
   syncUrl();
 }
 
@@ -1248,7 +1275,27 @@ function judge(){
   v.innerHTML = h;
 }
 
-/* ================= 문자 · 인쇄 ================= */
+/* ================= 문자 · 인쇄 =================
+   문자는 '보내기'가 아니라 '복사'로 통일한다. sms: 링크는 기기마다 동작이 다르고
+   학부모는 대개 담임과 이미 대화방이 있어 붙여넣는 편이 실제 행동에 가깝다. */
+var lastAuto = "";
+function fillMsg(){
+  var el = $("msg"); if (!el) return;
+  var t = smsBody();
+  if (!el.value.trim() || el.value === lastAuto) el.value = t;   /* 고쳐 쓴 내용은 지키기 */
+  lastAuto = t;
+}
+
+/* 결과를 보고 있으면 '달력으로', 달력을 보고 있으면 '결과 보기' */
+function updateBarBtn(){
+  var btn = $("barBtn"), out = $("out");
+  if (!btn || btn.hidden || !out.classList.contains("on")) return;
+  var atResult = out.getBoundingClientRect().top < window.innerHeight * 0.5;
+  btn.textContent = atResult ? "달력으로" : "결과 보기";
+  btn.dataset.to = atResult ? "cal" : "out";
+}
+
+
 function smsBody(){
   var s = state.start, e = state.end, dl = deadlineFor(s);
   var t = "안녕하세요, 선생님. ";
@@ -1358,42 +1405,36 @@ function wire(){
     $("q").value = ""; SCOPE = ""; showPick();
   };
 
-  $("barBtn").onclick = function(){ $("out").scrollIntoView({behavior:"smooth"}); };
+  $("barBtn").onclick = function(){
+    if ($("barBtn").dataset.to === "cal"){
+      var el = state.start && cells[key(state.start)];
+      if (el) el.scrollIntoView({block:"center", behavior:"smooth"});
+      else window.scrollTo({top:0, behavior:"smooth"});
+    } else {
+      $("out").scrollIntoView({behavior:"smooth"});
+    }
+  };
+  window.addEventListener("scroll", updateBarBtn, {passive:true});
+  window.addEventListener("resize", updateBarBtn, {passive:true});
   $("detail").addEventListener("input", judge);
 
-  $("sms").onclick = function(){
-    var body = smsBody();
-    if (navigator.clipboard) navigator.clipboard.writeText(body).catch(function(){});
-    var a = document.createElement("a");
-    a.href = "sms:?body=" + encodeURIComponent(body);
-    a.style.display = "none";
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function(){ a.remove(); toast("내용을 복사해 뒀어요"); }, 500);
+  $("copyMsg").onclick = function(){
+    var t = $("msg").value;
+    if (navigator.clipboard){
+      navigator.clipboard.writeText(t).then(
+        function(){ toast("복사했어요. 문자나 메신저에 붙여 넣으세요"); },
+        function(){ $("msg").select(); toast("길게 눌러 복사해 주세요"); });
+    } else { $("msg").select(); toast("길게 눌러 복사해 주세요"); }
   };
   $("neis").onclick = function(){
     state.sent = true;
     $("step2").classList.remove("wait");
-    $("sms").className = "btn";
+    $("copyMsg").className = "btn";
     $("neis").className = "btn ghost";
+    fillMsg();
   };
   $("print-btn").onclick = function(){ window.print(); };
-  $("share").onclick = function(){
-    var u = shareUrl();
-    if (navigator.share){ navigator.share({title:"교외체험학습 신청 기한", url:u}).catch(function(){}); return; }
-    if (navigator.clipboard) navigator.clipboard.writeText(u).then(function(){ toast("결과 주소를 복사했어요"); },
-      function(){ toast("복사에 실패했어요"); });
-    else toast("주소창의 주소를 복사해 주세요");
-  };
-  $("reset").onclick = function(){
-    state.start = null; state.end = null;
-    state.attend = null; state.periods = null; state.miss = null;
-    state.sent = false;
-    $("step2").classList.add("wait");
-    $("sms").className = "btn outline";
-    $("neis").className = "btn";
-    paint(); render(); window.scrollTo({top:0,behavior:"smooth"});
-  };
+
 
   /* 학사일정 */
   function refresh(){
