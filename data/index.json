@@ -1,1 +1,143 @@
 
+{
+ "sy": 2026,
+ "fetched": "2026-07-28",
+ "offices": [
+  {
+   "code": "B10",
+   "name": "서울특별시교육청",
+   "count": 1319,
+   "ok": 1119,
+   "partial": 173,
+   "none": 27
+  },
+  {
+   "code": "C10",
+   "name": "부산광역시교육청",
+   "count": 621,
+   "ok": 503,
+   "partial": 93,
+   "none": 25
+  },
+  {
+   "code": "D10",
+   "name": "대구광역시교육청",
+   "count": 462,
+   "ok": 399,
+   "partial": 45,
+   "none": 18
+  },
+  {
+   "code": "E10",
+   "name": "인천광역시교육청",
+   "count": 556,
+   "ok": 481,
+   "partial": 67,
+   "none": 8
+  },
+  {
+   "code": "F10",
+   "name": "전남광주통합특별시교육청(광주)",
+   "count": 321,
+   "ok": 275,
+   "partial": 37,
+   "none": 9
+  },
+  {
+   "code": "G10",
+   "name": "대전광역시교육청",
+   "count": 307,
+   "ok": 280,
+   "partial": 23,
+   "none": 4
+  },
+  {
+   "code": "H10",
+   "name": "울산광역시교육청",
+   "count": 245,
+   "ok": 217,
+   "partial": 25,
+   "none": 3
+  },
+  {
+   "code": "I10",
+   "name": "세종특별자치시교육청",
+   "count": 105,
+   "ok": 89,
+   "partial": 15,
+   "none": 1
+  },
+  {
+   "code": "J10",
+   "name": "경기도교육청",
+   "count": 2587,
+   "ok": 2271,
+   "partial": 268,
+   "none": 48
+  },
+  {
+   "code": "K10",
+   "name": "강원특별자치도교육청",
+   "count": 631,
+   "ok": 513,
+   "partial": 83,
+   "none": 35
+  },
+  {
+   "code": "M10",
+   "name": "충청북도교육청",
+   "count": 488,
+   "ok": 412,
+   "partial": 60,
+   "none": 16
+  },
+  {
+   "code": "N10",
+   "name": "충청남도교육청",
+   "count": 732,
+   "ok": 633,
+   "partial": 81,
+   "none": 18
+  },
+  {
+   "code": "P10",
+   "name": "전북특별자치도교육청",
+   "count": 743,
+   "ok": 642,
+   "partial": 90,
+   "none": 11
+  },
+  {
+   "code": "Q10",
+   "name": "전남광주통합특별시교육청(전남)",
+   "count": 855,
+   "ok": 689,
+   "partial": 134,
+   "none": 32
+  },
+  {
+   "code": "R10",
+   "name": "경상북도교육청",
+   "count": 918,
+   "ok": 818,
+   "partial": 87,
+   "none": 13
+  },
+  {
+   "code": "S10",
+   "name": "경상남도교육청",
+   "count": 989,
+   "ok": 872,
+   "partial": 105,
+   "none": 12
+  },
+  {
+   "code": "T10",
+   "name": "제주특별자치도교육청",
+   "count": 195,
+   "ok": 182,
+   "partial": 10,
+   "none": 3
+  }
+ ]
+}
