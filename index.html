@@ -108,6 +108,11 @@ h2.sec{font-family:var(--serif);font-size:20px;font-weight:700;margin:26px 0 12p
 .answer .big{font-family:var(--serif);font-size:27px;font-weight:700;margin:0;line-height:1.3;letter-spacing:-.02em}
 .answer .big.late{color:var(--clay)}
 .answer .sub{font-size:13.5px;color:var(--ink-2);margin:8px 0 0;line-height:1.6}
+.answer .big.soft{font-size:23px;color:var(--ink-2)}
+.answer .sub.alert{color:var(--clay);font-size:14.5px;font-weight:500;margin-top:10px}
+.answer .basis{font-size:12px;color:var(--ink-3);margin:10px 0 0;line-height:1.6;
+  padding-top:10px;border-top:1px solid var(--line)}
+.answer .basis b{color:var(--ink-2);font-weight:500}
 .answer .split{display:flex;gap:20px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
 .answer .split div{flex:1}
 .answer .split .k{font-size:12px;color:var(--ink-3);margin:0}
@@ -521,7 +526,7 @@ function yearHolidays(y){ if (!holCache[y]) holCache[y] = buildYear(y); return h
 
 /* ================= 설정 ================= */
 var cfg = {
-  name:"", lead:3, report:7, annual:null, max:null, sy:null, half:true, sc:"", quality:"",
+  name:"", lead:3, leadSrc:"default", report:7, annual:null, max:null, sy:null, half:true, sc:"", quality:"",
   vac:[], clo:[], hol:[], lunar:{}, locked:false, asked:false
 };
 /* 학년도: 3월 1일에 시작해 이듬해 2월 말일에 끝난다 */
@@ -544,8 +549,18 @@ function save(){
   })); }catch(e){}
 }
 function load(){
-  var q = new URLSearchParams(location.search).get("s");
-  if (q){ try{ var o = b64d(q); for (var k in o) cfg[k] = o[k]; cfg.locked = true; return; }catch(e){} }
+  var qs = new URLSearchParams(location.search);
+  var ld = parseInt(qs.get("lead"), 10);
+  if (ld >= 1 && ld <= 15){ cfg.lead = ld; cfg.leadSrc = "school"; }
+  var q = qs.get("s");
+  if (q){
+    try{
+      var o = b64d(q);
+      for (var k in o) cfg[k] = o[k];
+      if (o.lead) cfg.leadSrc = "school";
+      cfg.locked = true; return;
+    }catch(e){}
+  }
   try{
     var p = JSON.parse(localStorage.getItem("gcl2") || "null");
     if (p){ cfg.vac = p.vac || []; cfg.clo = p.clo || []; cfg.asked = !!p.asked; }
@@ -1067,7 +1082,28 @@ function restoreUrl(){
   if (["le3","ge4"].indexOf(av[2]) >= 0) state.miss = av[2];
 }
 
-/* ================= 결과 ================= */
+/* ================= 결과 =================
+   두 가지를 숨기지 않는다.
+   (1) 신청 기한 며칠이 어디서 온 값인지
+   (2) 학사일정이 부실하면 마감일이 '늦게' 나온다는 방향 */
+
+/* 학사일정이 부실하면 빠진 방학만큼 마감일이 뒤로 밀린다. 항상 이 방향이다. */
+function shaky(){ return !!(cfg.sc && cfg.quality && cfg.quality !== "ok"); }
+
+function basisLine(){
+  var unit = "수업일 기준 " + cfg.lead + "일 전";
+  if (cfg.leadSrc === "school")
+    return "<b>" + esc(cfg.name || "이 학교") + " 규정</b> · " + unit;
+  return "<b>일반 기준</b> · " + unit +
+         " · 학교 규정이 다를 수 있으니 담임 선생님께 확인해 주세요";
+}
+
+function shakyLine(){
+  if (cfg.quality === "none")
+    return "이 학교는 학사일정이 등록돼 있지 않습니다. 방학이 반영되지 않아 <b>실제 마감은 이보다 빠릅니다.</b>";
+  return "이 학교는 방학 일부가 등록돼 있지 않습니다. 그만큼 <b>실제 마감은 이보다 빠릅니다.</b>";
+}
+
 function render(){
   var bar = $("barMsg"), btn = $("barBtn");
   if (!state.start){
@@ -1082,9 +1118,12 @@ function render(){
   var t = today(), dl = deadlineFor(state.start);
   var late = dl && dl.getTime() < t.getTime();
   var dday = dl ? Math.round((dl - t) / 86400000) : 0;
+  var sh = shaky();
   bar.innerHTML = late
     ? "<b class='late'>기한이 지났어요</b>다른 날짜를 골라보세요"
-    : "<b>" + fmt(dl) + "까지 신청</b>" + (dday === 0 ? "오늘이 마감입니다" : "D-" + dday);
+    : sh
+      ? "<b>" + fmt(dl) + " 이전</b>실제 마감은 이보다 빠릅니다"
+      : "<b>" + fmt(dl) + "까지 신청</b>" + (dday === 0 ? "오늘이 마감입니다" : "D-" + dday);
   btn.hidden = false;
 
   var used = countSchool(state.start, state.end);
@@ -1096,7 +1135,19 @@ function render(){
     var es = earliest();
     h += '<div class="answer"><p class="lab">이 날짜로는 신청할 수 없습니다</p>' +
          '<p class="big late">마감은 ' + fmt(dl) + '이었어요</p>' +
-         '<p class="sub">' + (es ? "지금 신청하면 <b>" + fmt(es) + "</b>부터 다녀올 수 있습니다." : "") + "</p></div>";
+         '<p class="sub">' + (es ? "지금 신청하면 <b>" + fmt(es) + "</b>부터 다녀올 수 있습니다." : "") + "</p>" +
+         '<p class="basis">' + basisLine() + "</p></div>";
+  } else if (sh){
+    h += '<div class="answer"><p class="lab">신청서 제출 마감</p>' +
+         '<p class="big soft">' + fmtY(dl) + " 이전</p>" +
+         '<p class="sub alert">' + shakyLine() + "</p>" +
+         '<p class="sub">계산에 쓸 수 있는 학사일정만 반영한 결과입니다. ' +
+         '학교 학사일정을 넣으면 정확한 날짜가 나옵니다.</p>' +
+         '<div class="split">' +
+         '<div><p class="k">출석 인정 차감</p><p class="v">' + (ch === 0.5 ? "반일" : ch + "일") + "</p></div>" +
+         '<div><p class="k">보고서 마감</p><p class="v">' + fmt(report) + "</p></div>" +
+         "</div>" +
+         '<p class="basis">' + basisLine() + "</p></div>";
   } else {
     h += '<div class="answer"><p class="lab">신청서 제출 마감</p>' +
          '<p class="big">' + fmtY(dl) + "</p>" +
@@ -1104,7 +1155,8 @@ function render(){
          '<div class="split">' +
          '<div><p class="k">출석 인정 차감</p><p class="v">' + (ch === 0.5 ? "반일" : ch + "일") + "</p></div>" +
          '<div><p class="k">보고서 마감</p><p class="v">' + fmt(report) + "</p></div>" +
-         "</div></div>";
+         "</div>" +
+         '<p class="basis">' + basisLine() + "</p></div>";
   }
   $("answer").innerHTML = h;
 
