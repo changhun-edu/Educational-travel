@@ -172,6 +172,13 @@ input:focus,textarea:focus,summary:focus-visible,.d:focus-visible,button:focus-v
 .srch::after{content:"";position:absolute;left:27px;top:50%;width:7px;height:2px;
   margin-top:3px;background:var(--ink-3);transform:rotate(45deg)}
 .hits{margin-top:10px}
+.offgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:7px;margin-top:12px}
+.off{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 8px;
+  font:inherit;cursor:pointer;min-height:66px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;color:var(--ink)}
+.off:active{background:#F5F8F6}
+.off b{font-size:15.5px;font-weight:500;letter-spacing:-.02em}
+.off span{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .hit{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--card);
   border:1px solid var(--line);border-radius:12px;padding:15px 16px;margin-bottom:7px;
   font:inherit;font-size:16px;color:var(--ink);cursor:pointer;min-height:54px}
@@ -306,7 +313,7 @@ p.range{font-size:12.5px;color:var(--ink-3);margin:6px 0 0;letter-spacing:.01em}
     <h1 id="pickTitle">어느 지역인가요?</h1>
     <p class="lede" id="pickLede">시도교육청을 먼저 골라주세요. 한 번만 고르면 기억합니다.</p>
   </header>
-  <div class="hits" id="offices"></div>
+  <div class="offgrid" id="offices"></div>
   <div id="schoolStep" hidden>
     <div class="srch"><input id="q" type="search" placeholder="학교 이름 또는 초성" autocomplete="off" aria-label="학교 검색"></div>
     <p class="src" id="pickHint"></p>
@@ -562,10 +569,25 @@ function initials(s){
   return out;
 }
 
+/* 파일 이름을 두 가지로 받는다.
+     idx/B10.json      (data.zip 으로 받은 경우)
+     idx/B10-idx.json  (파일을 하나씩 받아 그대로 올린 경우)
+   한 번 맞으면 그 방식을 기억해 불필요한 요청을 하지 않는다. */
+var PAT = null;
+async function loadPart(kind, off){
+  var plain = off + ".json", suffixed = off + "-" + kind + ".json";
+  var names = (PAT === 1) ? [suffixed, plain] : [plain, suffixed];
+  for (var i=0;i<names.length;i++){
+    var j = await getJSON(DATA + kind + "/" + names[i]);
+    if (j){ PAT = (names[i] === suffixed) ? 1 : 0; return j; }
+  }
+  return null;
+}
+
 async function loadOffice(off){
   if (CUROFF === off && LIST) return true;
-  var a = await getJSON(DATA + "idx/" + off + ".json");
-  var b = await getJSON(DATA + "cal/" + off + ".json");
+  var a = await loadPart("idx", off);
+  var b = await loadPart("cal", off);
   if (!a) return false;
   LIST = a; CAL = b || {}; CUROFF = off;
   return true;
@@ -618,20 +640,29 @@ function showPick(step){
   screen("pick");
 }
 
+var SHORT = {B10:"서울",C10:"부산",D10:"대구",E10:"인천",F10:"광주",G10:"대전",H10:"울산",
+             I10:"세종",J10:"경기",K10:"강원",M10:"충북",N10:"충남",P10:"전북",Q10:"전남",
+             R10:"경북",S10:"경남",T10:"제주"};
+function shortName(o){
+  if (SHORT[o.code]) return SHORT[o.code];
+  var m = /\(([^)]+)\)/.exec(o.name || "");
+  if (m) return m[1];
+  return (o.name || o.code).replace("교육청","").replace(/(특별자치도|특별자치시|특별시|광역시|도)$/, "");
+}
+
 function renderOffices(){
   var box = $("offices");
   if (!IDX || !IDX.offices){ box.innerHTML = ""; return; }
   box.innerHTML = IDX.offices.map(function(o){
-    return '<button type="button" class="hit" data-off="' + o.code + '">' + esc(o.name) +
-           '<span class="c" style="margin-left:auto;font-size:12px;color:var(--ink-3)">' +
-           o.count + "개교</span></button>";
+    return '<button type="button" class="off" data-off="' + o.code + '">' +
+           "<b>" + esc(shortName(o)) + "</b><span>" + o.count + "</span></button>";
   }).join("");
-  Array.prototype.forEach.call(box.querySelectorAll(".hit"), function(b){
+  Array.prototype.forEach.call(box.querySelectorAll(".off"), function(b){
     b.onclick = async function(){
       b.disabled = true;
       var ok = await loadOffice(b.dataset.off);
       b.disabled = false;
-      if (!ok){ toast("학교 목록을 불러오지 못했어요"); return; }
+      if (!ok){ toast(b.textContent.replace(/\d+$/,"") + " 자료가 아직 준비되지 않았어요"); return; }
       $("q").value = ""; renderHits(); showPick("school"); $("q").focus();
     };
   });
