@@ -205,6 +205,8 @@ function normalize(rows){
     if (run.length >= 5) vac.push([iso(run[0]), iso(run[run.length-1])]);
     else run.forEach(function(d){ clo.push(iso(d)); });
   });
+  /* 학교가 공휴일을 휴업일로 중복 등록한 경우 제거 (선거일 등) */
+  clo = clo.filter(function(k){ return !holidays(+k.slice(0,4))[k]; });
   return {vac:vac, clo:clo.sort(), pub:pub,
           nullRatio: rows.length ? nulls/rows.length : 1};
 }
