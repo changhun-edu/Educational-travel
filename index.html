@@ -105,29 +105,49 @@ header p.lede{font-size:13px;color:var(--ink-2);margin:12px 0 0;line-height:1.7}
 header p.lede b{color:var(--ink);font-weight:600}
 
 /* ---------- calendar ---------- */
+.jump{
+  position:sticky;top:0;z-index:6;background:var(--paper);
+  display:flex;gap:4px;overflow-x:auto;padding:4px 0;
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.jump::-webkit-scrollbar{display:none}
+.jump button{
+  flex:none;min-width:44px;height:44px;padding:0 14px;border-radius:12px;
+  border:1px solid transparent;background:none;font:inherit;font-size:13px;
+  color:var(--ink-3);cursor:pointer;
+}
+.jump button.on{background:var(--ink);color:var(--paper);font-weight:600}
 .dowbar{
-  position:sticky;top:0;z-index:5;background:var(--paper);
+  position:sticky;top:52px;z-index:5;background:var(--paper);
   display:grid;grid-template-columns:repeat(7,1fr);align-items:center;text-align:center;
   font-size:11px;color:var(--ink-3);height:36px;
   border-bottom:1px solid var(--line);
 }
-.mon{
-  position:sticky;top:36px;z-index:4;background:var(--paper);
-  padding:24px 0 8px;
-}
+.mon{padding:24px 0 8px}
 .mon b{font-size:13px;font-weight:600;color:var(--ink-2);letter-spacing:.02em}
 #sentinel{height:1px}
 .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;
-  background:var(--card);border-radius:16px;padding:8px 4px;
+  background:var(--card);padding:8px 6px;margin:0 -16px;
   box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.grid + .grid{margin-top:2px}
 /* 고를 수 있는 날만 카드로 떠 있고, 못 고르는 날은 바탕에 잠긴다.
    방학·공휴일·주말·지난 날은 전부 후자다. */
 .d{
-  position:relative;height:48px;min-height:44px;border:1px solid transparent;
+  position:relative;height:44px;min-height:44px;border:1px solid transparent;
   background:none;font:inherit;font-size:15px;color:var(--ink);border-radius:11px;
   cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
 }
 .d.pad{visibility:hidden;pointer-events:none}
+.wk{
+  display:flex;align-items:center;gap:8px;width:100%;
+  min-height:44px;margin:4px 0;padding:0 16px;
+  border:1px dashed var(--line);background:var(--press);border-radius:12px;
+  font:inherit;font-size:12px;color:var(--ink-3);cursor:pointer;text-align:left;
+}
+.wk:active{background:var(--line)}
+.wk em{font-style:normal;color:var(--ink-2);font-weight:500}
+.wk i{font-style:normal;margin-left:auto;color:var(--off);font-size:11px}
+.wk i::after{content:" ▾"}
 .d.off{color:var(--off)}
 .d.today{border-color:var(--ink-3);font-weight:600}
 .d.today::after{
@@ -179,8 +199,8 @@ header p.lede b{color:var(--ink);font-weight:600}
 h2.sec{font-size:17px;font-weight:600;margin:40px 0 12px;letter-spacing:-.01em;
   padding-top:24px;border-top:1px solid var(--line)}
 h2.sec:first-of-type{border-top:none;padding-top:0;margin-top:24px}
-.answer{background:var(--answer);border:none;border-left:4px solid var(--clay);
-  border-radius:4px 16px 16px 4px;padding:24px 24px 16px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.answer{background:var(--answer);border:none;border-radius:16px;
+  padding:24px 24px 16px;box-shadow:0 2px 8px rgba(0,0,0,.07)}
 .answer .lab{font-size:12px;color:var(--ink-3);margin:0 0 4px}
 .answer .big{font-family:var(--serif);font-size:27px;font-weight:700;margin:0;line-height:1.3;
   letter-spacing:-.02em;color:var(--clay)}
@@ -305,6 +325,7 @@ p.range{font-size:12px;color:var(--ink-3);margin:4px 0 0;letter-spacing:.01em}
 .src{font-size:11px;color:var(--ink-3);line-height:1.6;margin:8px 0 0}
 .foot{padding:24px 0 40px;text-align:center}
 .foot p{font-size:11px;color:var(--ink-3);line-height:1.7;margin:0}
+.foot p.credit{margin-top:16px;color:var(--off);font-size:11px;letter-spacing:.02em}
 
 #toast{position:fixed;left:50%;bottom:calc(var(--bar) + 26px + env(safe-area-inset-bottom));
   transform:translate(-50%,10px);background:var(--ink);color:#fff;font-size:13px;
@@ -356,6 +377,7 @@ p.range{font-size:12px;color:var(--ink-3);margin:4px 0 0;letter-spacing:.01em}
 
   <div id="banner"></div>
 
+  <div class="jump" id="jump" role="tablist" aria-label="월 이동"></div>
   <div class="dowbar"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
   <div id="cal"></div>
 
@@ -434,6 +456,7 @@ p.range{font-size:12px;color:var(--ink-3);margin:4px 0 0;letter-spacing:.01em}
     <p>초·중등교육법 시행령 제48조 제5항 · 유아교육법 시행령 제12조 제2항<br>
       학교생활기록 작성 및 관리지침(교육부 훈령 제555호)</p>
     <p style="margin-top:8px" id="source"></p>
+    <p class="credit">만든이 2026 최창훈</p>
   </div>
 </div>
 
@@ -774,10 +797,7 @@ function showPick(){
     $("source").innerHTML = "학사일정 출처: 나이스 교육정보 개방 포털 · " +
       esc(IDX.fetched || "") + " 기준 · " + IDX.sy + "학년도 " + n.toLocaleString() + "개교";
   }
-  renderScope();
-  renderOffices();
-  renderHits();
-  screen("pick");
+  setView("pick", arguments[0] !== false);
 }
 
 var SHORT = {B10:"서울",C10:"부산",D10:"대구",E10:"인천",F10:"광주",G10:"대전",H10:"울산",
@@ -879,18 +899,21 @@ async function renderHits(){
       var ok = await applySchool(b.dataset.id);
       b.disabled = false;
       if (!ok){ toast("이 학교의 학사일정을 불러오지 못했어요"); return; }
-      syncSc(b.dataset.id);
-      startApp();
+      syncSc(b.dataset.id, true);
+      startApp(true);
       refreshSchool(b.dataset.id);
     };
   });
 }
 
-function syncSc(id){
+/* clearDates 는 학교를 새로 고를 때만 참. 새로고침으로 들어온 경우에는
+   주소에 담긴 날짜를 지우면 안 된다. */
+function syncSc(id, clearDates){
   var u = new URL(location.href);
   u.searchParams.set("sc", id);
-  u.searchParams.delete("d"); u.searchParams.delete("a");
-  try{ history.replaceState(null, "", u.toString()); }catch(e){}
+  if (clearDates){ u.searchParams.delete("d"); u.searchParams.delete("a"); }
+  u.hash = "";
+  try{ history.replaceState({v:VIEW}, "", u.pathname + u.search); }catch(e){}
 }
 
 /* ================= 날짜 ================= */
@@ -945,6 +968,48 @@ function countSchool(a,b){
   return n;
 }
 
+/* ---------- 월 이동 바 ----------
+   스크롤 길이를 줄이는 게 아니라 스크롤할 이유를 없앤다.
+   지금 보고 있는 달을 함께 표시해 위치도 알려준다. */
+function renderJump(){
+  var box = $("jump"); if (!box) return;
+  var need = [];
+  for (var i = 0; i < cal.total; i++){
+    var d = new Date(cal.from.getFullYear(), cal.from.getMonth() + i, 1);
+    need.push(d.getMonth() + 1);
+  }
+  if (box.children.length !== need.length){
+    box.innerHTML = need.map(function(mm, i){
+      return '<button type="button" data-mi="' + i + '">' + mm + "월</button>";
+    }).join("");
+    Array.prototype.forEach.call(box.children, function(b){
+      b.onclick = function(){
+        var i = +b.dataset.mi;
+        if (i >= cal.drawn) drawMonths(i - cal.drawn + 1);
+        var t = monthEls[i];
+        if (t) window.scrollTo({top: t.el.getBoundingClientRect().top + window.scrollY - 92,
+                                behavior:"smooth"});
+      };
+    });
+  }
+  markJump();
+}
+
+function markJump(){
+  var box = $("jump"); if (!box || !box.children.length) return;
+  var at = 0;
+  for (var i = 0; i < monthEls.length; i++){
+    if (monthEls[i].el.getBoundingClientRect().top - 100 <= 0) at = i;
+  }
+  Array.prototype.forEach.call(box.children, function(b, i){
+    b.classList.toggle("on", i === at);
+  });
+  var cur = box.children[at];
+  if (cur && cur.offsetLeft < box.scrollLeft) box.scrollLeft = cur.offsetLeft - 8;
+  else if (cur && cur.offsetLeft + cur.offsetWidth > box.scrollLeft + box.clientWidth)
+    box.scrollLeft = cur.offsetLeft + cur.offsetWidth - box.clientWidth + 8;
+}
+
 /* ================= 상태 ================= */
 var state = { start:null, end:null, reason:null, attend:null, periods:null, miss:null, sent:false };
 var cells = {};
@@ -973,6 +1038,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g,function(c){ return {"&":"&a
 
 /* ================= 달력 ================= */
 var cal = { from:null, sy:0, total:0, drawn:0, host:null, sentinel:null, obs:null, done:false };
+var monthEls = [];
 
 function monthOffset(a, b){
   return (b.getFullYear()*12 + b.getMonth()) - (a.getFullYear()*12 + a.getMonth());
@@ -983,6 +1049,7 @@ function buildCal(){
   host.innerHTML = ""; cells = {};
   if (cal.obs){ cal.obs.disconnect(); cal.obs = null; }
 
+  monthEls = [];
   cal.from = new Date(r.from.getFullYear(), r.from.getMonth(), 1);
   cal.sy = r.sy;
   cal.total = monthOffset(cal.from, r.to) + 1;
@@ -1014,6 +1081,7 @@ function drawMonths(n){
     cal.drawn++;
   }
   if (cal.drawn >= cal.total && !cal.done) finishCal();
+  renderJump();
   paint();
 }
 
@@ -1039,33 +1107,98 @@ function place(node){
   else cal.host.appendChild(node);
 }
 
+function makeCell(d, inMonth){
+  var t = today(), k = key(d);
+  if (!inMonth){
+    var pd = document.createElement("div"); pd.className = "d pad"; return pd;
+  }
+  var bt = document.createElement("button");
+  bt.type = "button"; bt.textContent = d.getDate(); bt.dataset.k = k;
+  var reason = why(d), past = d.getTime() < t.getTime();
+  bt.className = "d" + ((reason || past) ? " off" : "") + (k === key(t) ? " today" : "");
+  bt.setAttribute("aria-label", fmtY(d) + (reason ? " " + reason : ""));
+  bt.onclick = function(){ tap(d, reason, past); };
+  cells[k] = bt;
+  return bt;
+}
+
+/* 한 주의 상태를 살핀다. 오늘이 든 주는 위치를 잃지 않도록 접지 않는다. */
+function weekInfo(sun, y, m){
+  var t = today(), days = [], inM = 0, locked = 0, hasToday = false, reasons = {}, mine = [];
+  for (var i = 0; i < 7; i++){
+    var d = addDays(sun, i), belongs = (d.getMonth() === m && d.getFullYear() === y);
+    days.push([d, belongs]);
+    if (!belongs) continue;
+    inM++; mine.push(d);
+    if (key(d) === key(t)) hasToday = true;
+    var r = why(d), past = d.getTime() < t.getTime();
+    if (r || past){
+      locked++;
+      var lab = r || "지난 날";
+      if (d.getDay() !== 0 && d.getDay() !== 6) reasons[lab] = (reasons[lab] || 0) + 1;
+    }
+  }
+  return {
+    days: days, mine: mine,
+    locked: inM > 0 && locked === inM && !hasToday,
+    reasons: reasons
+  };
+}
+
+function gridOf(weeks){
+  var g = document.createElement("div");
+  g.className = "grid";
+  weeks.forEach(function(w){
+    w.days.forEach(function(x){ g.appendChild(makeCell(x[0], x[1])); });
+  });
+  return g;
+}
+
+/* 연속으로 잠긴 주는 한 줄로 합친다. 격자 밖에 두어 판 안쪽 리듬을 지킨다. */
+function stripOf(weeks){
+  var all = [], reasons = {};
+  weeks.forEach(function(w){
+    all = all.concat(w.mine);
+    for (var k in w.reasons) reasons[k] = (reasons[k] || 0) + w.reasons[k];
+  });
+  var f = all[0], l = all[all.length - 1];
+  var name = Object.keys(reasons).sort(function(x, z){ return reasons[z] - reasons[x]; })[0] || "쉬는 날";
+  var span = (f.getMonth() + 1) + "월 " + f.getDate() + "일 ~ " +
+             (f.getMonth() === l.getMonth() ? "" : (l.getMonth() + 1) + "월 ") + l.getDate() + "일";
+
+  var strip = document.createElement("button");
+  strip.type = "button"; strip.className = "wk";
+  strip.innerHTML = '<span>' + span + '</span><em>' + esc(name) + '</em><i>펼치기</i>';
+  strip.setAttribute("aria-label", span + " " + name + ", 눌러서 펼치기");
+  strip.onclick = function(){ strip.replaceWith(gridOf(weeks)); paint(); };
+  return strip;
+}
+
 function drawMonth(first){
   var y = first.getFullYear(), m = first.getMonth();
-  var t = today(), tk = key(t);
   var head = document.createElement("div");
   head.className = "mon";
   head.innerHTML = "<b>" + y + "년 " + (m + 1) + "월</b>";
+  monthEls.push({el:head, y:y, m:m});
   place(head);
 
-  var g = document.createElement("div");
-  g.className = "grid";
-  var last = new Date(y, m + 1, 0);
-  for (var p = 0; p < first.getDay(); p++){
-    var pd = document.createElement("div"); pd.className = "d pad"; g.appendChild(pd);
+  var lastDay = new Date(y, m + 1, 0).getDate();
+  var weeks = [], sun = addDays(first, -first.getDay());
+  while (true){
+    weeks.push(weekInfo(sun, y, m));
+    sun = addDays(sun, 7);
+    if (!(sun.getMonth() === m && sun.getDate() <= lastDay)) break;
   }
-  for (var i = 1; i <= last.getDate(); i++){
-    (function(i){
-      var d = new Date(y, m, i), k = key(d);
-      var b = document.createElement("button");
-      b.type = "button"; b.textContent = i; b.dataset.k = k;
-      var reason = why(d), past = d.getTime() < t.getTime();
-      b.className = "d" + ((reason || past) ? " off" : "") + (k === tk ? " today" : "");
-      b.setAttribute("aria-label", fmtY(d) + (reason ? " " + reason : ""));
-      b.onclick = function(){ tap(d, reason, past); };
-      cells[k] = b; g.appendChild(b);
-    })(i);
-  }
-  place(g);
+
+  var blocks = [], cur = null;
+  weeks.forEach(function(w){
+    var t = w.locked ? "strip" : "grid";
+    if (!cur || cur.t !== t){ cur = {t:t, ws:[]}; blocks.push(cur); }
+    cur.ws.push(w);
+  });
+  blocks.forEach(function(b){
+    place(b.t === "grid" ? gridOf(b.ws) : stripOf(b.ws));
+  });
 }
 
 function paint(){
@@ -1177,7 +1310,7 @@ function shareUrl(){
   return location.origin + location.pathname + (qs ? "?" + qs : "");
 }
 function syncUrl(){
-  try{ history.replaceState(null, "", shareUrl()); }catch(e){}
+  try{ history.replaceState({v:VIEW}, "", shareUrl()); }catch(e){}
 }
 function restoreUrl(){
   var p = new URLSearchParams(location.search), d = p.get("d");
@@ -1309,7 +1442,7 @@ function render(){
          cfg.sy + "학년도 학사일정으로 만들어졌습니다. 그 해의 방학·재량휴업일이 반영되지 않았을 수 있습니다.</div>";
   }
   $("notes").innerHTML = n;
-  if ($("openCal")) $("openCal").onclick = function(){ screen("cal-edit"); };
+  if ($("openCal")) $("openCal").onclick = function(){ setView("cal", true); };
 
   renderHalf();
   $("out").classList.add("on");
@@ -1416,12 +1549,53 @@ function buildPrint(dl, report, used){
     '<div class="sign">위와 같이 신청합니다.<br>20 　 년 　 월 　 일<br>보호자 : 　　　　 (인)<br>학생 : 　　　　 (인)</div>';
 }
 
-/* ================= 화면 ================= */
+/* ================= 화면 =================
+   화면을 바꿀 때 히스토리에 남긴다. 그래야 뒤로가기가 사이트를 벗어나지 않고
+   이전 화면으로 돌아간다. 주소에 해시(#)는 쓰지 않는다. */
+var VIEW = "app", WANTS_ADMIN = false;
+
+function cleanHref(){
+  var u = new URL(location.href);
+  u.hash = "";                       /* 해시는 남기지 않는다 */
+  return u.pathname + u.search;
+}
+
 function screen(which){
   ["app","pick","cal-edit","admin"].forEach(function(id){ $(id).style.display = (id === which) ? "" : "none"; });
   $("bar").style.display = (which === "app") ? "" : "none";
+  $("jump").style.display = (which === "app") ? "" : "none";
   window.scrollTo(0,0);
 }
+
+/* push=true 면 새 기록을 쌓고, false 면 현재 기록을 바꾼다 */
+function setView(v, push){
+  VIEW = v;
+  try{
+    if (push) history.pushState({v:v}, "", cleanHref());
+    else history.replaceState({v:v}, "", cleanHref());
+  }catch(e){}
+  paintView(v);
+}
+
+function paintView(v){
+  if (v === "pick"){
+    if (IDX && $("source")){
+      var n = (IDX.offices || []).reduce(function(a,b){ return a + b.count; }, 0);
+      $("source").innerHTML = "학사일정 출처: 나이스 교육정보 개방 포털 · " +
+        esc(IDX.fetched || "") + " 기준 · " + IDX.sy + "학년도 " + n.toLocaleString() + "개교";
+    }
+    renderScope(); renderOffices(); renderHits(); screen("pick");
+  }
+  else if (v === "cal"){ screen("cal-edit"); }
+  else if (v === "admin"){ screen("admin"); }
+  else screen("app");
+}
+
+window.addEventListener("popstate", function(e){
+  var v = (e.state && e.state.v) || (cfg.sc || cfg.locked ? "app" : "pick");
+  VIEW = v;
+  paintView(v);
+});
 function chips(box, arr, kind, after){
   box.innerHTML = "";
   arr.forEach(function(item,i){
@@ -1439,7 +1613,12 @@ async function boot(){
   $("until").textContent = LUNAR_UNTIL + "년";
 
   var params0 = new URLSearchParams(location.search);
-  var wantsAdmin = params0.get("admin") === "1" || location.hash === "#admin";
+  var wantsAdmin = params0.get("admin") === "1";
+  if (location.hash){                    /* 예전 #admin 링크도 받되 해시는 지운다 */
+    if (location.hash === "#admin") wantsAdmin = true;
+    try{ history.replaceState(null, "", cleanHref()); }catch(e){}
+  }
+  WANTS_ADMIN = wantsAdmin;
 
   /* 설정 링크(?s=)가 있으면 그대로. 아니면 학교 목록을 찾아본다. */
   $("q").addEventListener("input", function(){ renderHits(); });
@@ -1451,11 +1630,11 @@ async function boot(){
       var want = params0.get("sc");
       if (!want){ try{ want = localStorage.getItem("gcl_sc"); }catch(e){} }
       if (!want || !(await applySchool(want))){
-        showPick();
+        showPick(false);
         wire();
         return;
       }
-      syncSc(want);
+      syncSc(want, false);            /* 새로고침으로 들어온 날짜를 지우지 않는다 */
     }
   }
   startApp();
@@ -1463,12 +1642,12 @@ async function boot(){
   if (cfg.sc) refreshSchool(cfg.sc);
 }
 
-function startApp(){
+function startApp(push){
   if (cfg.name){
     $("kicker").textContent = cfg.name;
     $("chgSchool").hidden = !IDX;
   }
-  screen("app");
+  setView("app", push === true);
   restoreUrl();
   buildCal(); renderOpts();
   if (state.end) ensureDrawn(state.end);
@@ -1488,8 +1667,9 @@ function wire(){
     try{ localStorage.removeItem("gcl_sc"); }catch(e){}
     var u = new URL(location.href);
     u.searchParams.delete("sc"); u.searchParams.delete("d"); u.searchParams.delete("a");
-    history.replaceState(null, "", u.toString());
-    $("q").value = ""; SCOPE = ""; showPick();
+    u.hash = "";
+    try{ history.replaceState({v:VIEW}, "", u.pathname + u.search); }catch(e){}
+    $("q").value = ""; SCOPE = ""; showPick(true);
   };
 
   $("barBtn").onclick = function(){
@@ -1502,6 +1682,7 @@ function wire(){
     }
   };
   window.addEventListener("scroll", updateBarBtn, {passive:true});
+  window.addEventListener("scroll", markJump, {passive:true});
   window.addEventListener("resize", updateBarBtn, {passive:true});
   $("detail").addEventListener("input", judge);
 
@@ -1543,8 +1724,17 @@ function wire(){
     cfg.clo.sort(); $("cd").value = "";
     chips($("cloChips"), cfg.clo, "clo"); save();
   };
-  $("doneCal").onclick = function(){ cfg.asked = true; refresh(); screen("app"); $("out").scrollIntoView(); };
-  $("skipCal").onclick = function(){ cfg.asked = true; save(); screen("app"); };
+  $("doneCal").onclick = function(){
+    cfg.asked = true; refresh();
+    if (history.state && history.state.v === "cal") history.back();
+    else setView("app", false);
+    setTimeout(function(){ $("out").scrollIntoView(); }, 60);
+  };
+  $("skipCal").onclick = function(){
+    cfg.asked = true; save();
+    if (history.state && history.state.v === "cal") history.back();
+    else setView("app", false);
+  };
 
   /* 관리자 */
   $("aAddVac").onclick = function(){
@@ -1586,7 +1776,7 @@ function wire(){
   chips($("cloChips"), cfg.clo, "clo");
 
   var params = new URLSearchParams(location.search);
-  if (params.get("admin") === "1" || location.hash === "#admin"){
+  if (WANTS_ADMIN){
     $("aSy").value = cfg.sy || schoolYear(today());
     Array.prototype.forEach.call($("aHalf").children, function(b){
       b.classList.toggle("on", (b.dataset.v === "1") === (cfg.half !== false));
@@ -1598,7 +1788,7 @@ function wire(){
     chips($("aVacChips"), cfg.vac, "vac");
     chips($("aCloChips"), cfg.clo, "clo");
     chips($("aHolChips"), cfg.hol, "clo");
-    screen("admin");
+    setView("admin", false);
   }
 }
 
