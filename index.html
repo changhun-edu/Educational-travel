@@ -95,6 +95,8 @@ body{
   -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;
 }
 .wrap{max-width:480px;margin:0 auto;padding:0 16px}
+#pick{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+#pick .foot{margin-top:auto}
 .pad-bottom{height:calc(var(--bar) + 24px + env(safe-area-inset-bottom))}
 
 /* ---------- header ---------- */
@@ -285,7 +287,20 @@ p.flabel{font-size:12px;color:var(--ink-2);font-weight:500;margin:24px 0 8px}
   border-radius:999px;padding:8px 8px 8px 12px;font-size:13px;font-weight:500}
 .scope b button{background:none;border:none;color:var(--paper);font-size:17px;line-height:1;
   cursor:pointer;padding:0 4px;min-height:26px}
+.demo{background:var(--answer);border-radius:14px;padding:16px;margin-top:24px;
+  box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.demo .k{font-size:12px;color:var(--ink-3);margin:0}
+.demo .k b{display:inline-block;background:var(--clay);color:#fff;font-size:11px;font-weight:600;
+  border-radius:4px;padding:2px 6px;margin-right:8px;letter-spacing:.02em}
+.demo .v{font-family:var(--serif);font-size:23px;font-weight:700;color:var(--clay);
+  margin:8px 0 0;letter-spacing:-.02em}
+.demo .d{font-size:12px;color:var(--ink-2);margin:12px 0 0;padding-top:12px;
+  border-top:1px solid var(--line);line-height:1.7}
 details.fold{background:none;border:none;border-radius:0;margin:24px 0 0;overflow:visible}
+details.fold .body{padding:0 0 8px;font-size:13px;color:var(--ink-2);line-height:1.75}
+details.fold .body h4{font-size:13px;font-weight:600;color:var(--ink);margin:16px 0 4px}
+details.fold .body h4:first-child{margin-top:0}
+details.fold .body p{margin:0}
 details.fold > summary{padding:12px 0;font-size:13px;font-weight:500;color:var(--ink-2)}
 details.fold > summary::after{content:"▾";float:right;color:var(--ink-3);font-weight:400}
 details.fold[open] > summary::after{content:"▴"}
@@ -455,9 +470,31 @@ p.range{font-size:12px;color:var(--ink-3);margin:4px 0 0;letter-spacing:.01em}
   <p class="src" id="pickHint"></p>
   <div class="hits" id="hits"></div>
 
-  <details class="fold" id="offWrap">
+  <div class="demo">
+    <p class="k"><b>예시</b> 8월 19일(수)에 다녀오려면</p>
+    <p class="v">8월 12일(수)까지 제출</p>
+    <p class="d">수업일 기준 3일 전 · 방학과 재량휴업일 제외<br>
+      실제 날짜는 학교마다 다릅니다</p>
+  </div>
+
+  <details class="fold" id="offWrap" open>
     <summary>지역으로 찾기</summary>
     <div class="offgrid" id="offices"></div>
+  </details>
+
+  <details class="fold">
+    <summary>자주 묻는 것</summary>
+    <div class="body">
+      <h4>신청하면 다 허가되나요?</h4>
+      <p>아닙니다. 학교(원)장이 신청서를 검토해, 학교교육과정 운영에 지장을 주거나
+        운영 목적에 맞지 않는다고 판단하면 허가하지 않을 수 있습니다.</p>
+      <h4>반나절만 다녀와도 되나요?</h4>
+      <p>됩니다. 최소 반일 단위로 신청할 수 있고 기준은 학교가 정합니다.
+        다만 4교시 안에 일과가 끝나는 날은 반일이 아니라 1일로 처리됩니다.</p>
+      <h4>신청서를 안 내고 다녀오면요?</h4>
+      <p>사전 허가를 받지 않은 교외체험학습은 <b>미인정 결석</b>으로 처리되는 것이 원칙입니다.
+        다녀온 뒤에는 결과보고서도 내야 출석으로 인정됩니다.</p>
+    </div>
   </details>
 
   <div class="foot">
@@ -826,6 +863,13 @@ function skel(box, cls, n){
   box.innerHTML = new Array(n + 1).join('<div class="skel ' + cls + '"></div>');
 }
 
+function toggleIntro(hide){
+  Array.prototype.forEach.call(document.querySelectorAll("#pick .demo, #pick .fold"), function(el){
+    if (el.id === "offWrap") return;          /* 지역 영역은 별도로 다룬다 */
+    el.hidden = !!hide;
+  });
+}
+
 function renderOffices(){
   var box = $("offices");
   if (!IDX || !IDX.offices){ skel(box, "r", 6); return; }
@@ -869,7 +913,7 @@ async function renderHits(){
   var seq = ++searchSeq;
 
   $("offWrap").hidden = !!q || !!SCOPE;
-  if (q && $("offWrap").open) $("offWrap").open = false;
+  toggleIntro(!!q || !!SCOPE);
 
   if (!q){
     box.innerHTML = "";
