@@ -99,7 +99,7 @@ body{
 
 /* ---------- header ---------- */
 header{padding:24px 0 12px}
-header p.kicker{font-size:12px;letter-spacing:.14em;color:var(--ink-3);margin:0 0 8px}
+header p.kicker{font-size:12px;letter-spacing:.08em;color:var(--ink-3);margin:0 0 8px}
 header h1{font-weight:700;font-size:27px;line-height:1.3;margin:0;letter-spacing:-.03em}
 header p.lede{font-size:13px;color:var(--ink-2);margin:12px 0 0;line-height:1.7}
 header p.lede b{color:var(--ink);font-weight:600}
@@ -285,14 +285,20 @@ p.flabel{font-size:12px;color:var(--ink-2);font-weight:500;margin:24px 0 8px}
   border-radius:999px;padding:8px 8px 8px 12px;font-size:13px;font-weight:500}
 .scope b button{background:none;border:none;color:var(--paper);font-size:17px;line-height:1;
   cursor:pointer;padding:0 4px;min-height:26px}
-.browse{font-size:12px;color:var(--ink-3);margin:24px 0 0}
-.offgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:12px}
-.region{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 8px;
-  font:inherit;cursor:pointer;min-height:66px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:2px;color:var(--ink)}
+details.fold{background:none;border:none;border-radius:0;margin:24px 0 0;overflow:visible}
+details.fold > summary{padding:12px 0;font-size:13px;font-weight:500;color:var(--ink-2)}
+details.fold > summary::after{content:"▾";float:right;color:var(--ink-3);font-weight:400}
+details.fold[open] > summary::after{content:"▴"}
+.foot details.fold.law{margin:8px 0 0}
+.foot details.fold.law > summary{padding:8px 0;font-size:11px;color:var(--ink-3);font-weight:400;text-align:center}
+.foot details.fold.law > summary::after{content:"";float:none}
+.foot button.plain{background:none;border:none;font:inherit;font-size:11px;color:var(--ink-3);
+  cursor:pointer;padding:12px 8px;min-height:44px}
+.offgrid{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 8px}
+.region{background:var(--card);border:1px solid var(--line);border-radius:999px;
+  padding:0 16px;min-height:44px;display:inline-flex;align-items:center;
+  font:inherit;font-size:15px;color:var(--ink);cursor:pointer;letter-spacing:-.02em}
 .region:active{background:var(--press)}
-.region b{font-size:15px;font-weight:500;letter-spacing:-.02em}
-.region span{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .hit{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:var(--card);
   border:1px solid var(--line);border-radius:12px;padding:16px 16px;margin-bottom:8px;
   font:inherit;font-size:15px;color:var(--ink);cursor:pointer;min-height:48px}
@@ -440,23 +446,28 @@ p.range{font-size:12px;color:var(--ink-3);margin:4px 0 0;letter-spacing:.01em}
   <header>
     <p class="kicker">학교장 허가 교외체험학습</p>
     <h1>신청서,<br>언제까지 내야 할까요?</h1>
-    <p class="lede">체험학습 시작 <b>3일 전</b>까지 내야 하는데, 토·일·공휴일은 물론
-      <b>학교 방학과 재량휴업일</b>까지 빼고 세야 합니다. 학교마다 달라 손으로는 헷갈립니다.</p>
+    <p class="lede">체험학습 3일 전까지 내야 하는데,
+      <b>토·일·공휴일에 학교 방학과 재량휴업일까지</b> 빼고 세야 합니다.</p>
   </header>
   <p class="flabel">다니는 학교</p>
   <div class="srch"><input id="q" type="search" placeholder="예: 운남초 또는 ㅇㄴㅊ" autocomplete="off" aria-label="학교 검색"></div>
   <div class="scope" id="scope" hidden></div>
   <p class="src" id="pickHint"></p>
   <div class="hits" id="hits"></div>
-  <div id="offWrap">
-    <p class="browse">지역으로 찾기</p>
+
+  <details class="fold" id="offWrap">
+    <summary>지역으로 찾기</summary>
     <div class="offgrid" id="offices"></div>
-  </div>
-  <button class="btn link" id="skipPick">학교가 목록에 없어요</button>
+  </details>
+
   <div class="foot">
-    <p>초·중등교육법 시행령 제48조 제5항 · 유아교육법 시행령 제12조 제2항<br>
-      학교생활기록 작성 및 관리지침(교육부 훈령 제555호)</p>
-    <p style="margin-top:8px" id="source"></p>
+    <p id="source"></p>
+    <details class="fold law">
+      <summary>법령 근거</summary>
+      <p>초·중등교육법 시행령 제48조 제5항 · 유아교육법 시행령 제12조 제2항<br>
+        학교생활기록 작성 및 관리지침(교육부 훈령 제555호)</p>
+    </details>
+    <p><button class="plain" id="skipPick">학교가 목록에 없어요</button></p>
     <p class="credit">만든이 2026 최창훈</p>
   </div>
 </div>
@@ -820,7 +831,7 @@ function renderOffices(){
   if (!IDX || !IDX.offices){ skel(box, "r", 6); return; }
   box.innerHTML = IDX.offices.map(function(o){
     return '<button type="button" class="region" data-off="' + o.code + '">' +
-           "<b>" + esc(shortName(o)) + "</b><span>" + o.count + "</span></button>";
+           esc(shortName(o)) + "</button>";
   }).join("");
   Array.prototype.forEach.call(box.querySelectorAll(".region"), function(b){
     b.onclick = async function(){
@@ -858,12 +869,13 @@ async function renderHits(){
   var seq = ++searchSeq;
 
   $("offWrap").hidden = !!q || !!SCOPE;
+  if (q && $("offWrap").open) $("offWrap").open = false;
 
   if (!q){
     box.innerHTML = "";
     $("pickHint").textContent = SCOPE && LIST
-      ? LIST.length + "개교 · 이름을 넣어보세요"
-      : (IDX ? "전국 " + (IDX.offices||[]).reduce(function(a,b){ return a+b.count; },0) +
+      ? LIST.length.toLocaleString() + "개교 · 이름을 넣어보세요"
+      : (IDX ? "전국 " + (IDX.offices||[]).reduce(function(a,b){ return a+b.count; },0).toLocaleString() +
                "개교 · " + IDX.sy + "학년도 기준" : "");
     return;
   }
