@@ -1693,6 +1693,14 @@ function cleanHref(){
   return u.pathname + u.search;
 }
 
+/* 주소에 해시가 붙으면 즉시 떼어낸다.
+   이 앱은 해시를 쓰지 않지만, 즐겨찾기·외부 링크·브라우저 복원으로 들어올 수 있다.
+   history.state 는 그대로 두어 화면 기록이 끊기지 않게 한다. */
+function stripHash(){
+  if (!location.hash) return;
+  try{ history.replaceState(history.state, "", cleanHref()); }catch(e){}
+}
+
 function screen(which){
   ["app","pick","cal-edit","admin"].forEach(function(id){ $(id).style.display = (id === which) ? "" : "none"; });
   $("bar").style.display = (which === "app") ? "" : "none";
@@ -1752,10 +1760,8 @@ async function boot(){
 
   var params0 = new URLSearchParams(location.search);
   var wantsAdmin = params0.get("admin") === "1";
-  if (location.hash){                    /* 예전 #admin 링크도 받되 해시는 지운다 */
-    if (location.hash === "#admin") wantsAdmin = true;
-    try{ history.replaceState(null, "", cleanHref()); }catch(e){}
-  }
+  if (location.hash === "#admin") wantsAdmin = true;   /* 예전 링크도 받아준다 */
+  stripHash();
   WANTS_ADMIN = wantsAdmin;
 
   /* 설정 링크(?s=)가 있으면 그대로. 아니면 학교 목록을 찾아본다. */
@@ -1821,6 +1827,7 @@ function wire(){
   };
   window.addEventListener("scroll", updateBarBtn, {passive:true});
   window.addEventListener("scroll", markJump, {passive:true});
+  window.addEventListener("hashchange", stripHash);
   window.addEventListener("resize", updateBarBtn, {passive:true});
   $("detail").addEventListener("input", judge);
 
