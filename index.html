@@ -165,10 +165,13 @@ header p.lede b{color:var(--ink);font-weight:600}
 .d.dl .tag{position:absolute;bottom:3px;left:0;right:0;font-size:11px;font-weight:500;
   color:var(--clay);letter-spacing:-.02em}
 .d.dl{padding-bottom:12px}
-.ring{position:absolute;inset:-3px;pointer-events:none;overflow:visible}
+.ring{
+  position:absolute;left:50%;top:1px;width:36px;height:30px;margin-left:-18px;
+  pointer-events:none;overflow:visible;
+}
 .ring ellipse{
-  fill:none;stroke:var(--clay);stroke-width:2.5;stroke-linecap:round;
-  stroke-dasharray:140;stroke-dashoffset:140;animation:draw .5s ease .05s forwards;
+  fill:none;stroke:var(--clay);stroke-width:2;stroke-linecap:round;
+  stroke-dasharray:92;stroke-dashoffset:92;animation:draw .5s ease .05s forwards;
 }
 @keyframes draw{to{stroke-dashoffset:0}}
 @media(prefers-reduced-motion:reduce){.ring ellipse{animation:none;stroke-dashoffset:0}}
@@ -1223,7 +1226,7 @@ function paint(){
       el.className = c + " dl";
       el.insertAdjacentHTML("beforeend",
         '<span class="tag">마감</span>' +
-        '<svg class="ring" viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="24" cy="24" rx="20" ry="17" transform="rotate(-8 24 24)"/></svg>');
+        '<svg class="ring" viewBox="0 0 36 30" aria-hidden="true"><ellipse cx="18" cy="15" rx="15" ry="12" transform="rotate(-8 18 15)"/></svg>');
     }
   });
 }
