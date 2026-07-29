@@ -135,7 +135,7 @@ header p.lede b{color:var(--ink);font-weight:600}
 .d{
   position:relative;height:44px;min-height:44px;border:1px solid transparent;
   background:none;font:inherit;font-size:15px;color:var(--ink);border-radius:11px;
-  cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;padding:0 0 14px;display:flex;align-items:center;justify-content:center;
 }
 .d.pad{visibility:hidden;pointer-events:none}
 .wk{
@@ -151,10 +151,9 @@ header p.lede b{color:var(--ink);font-weight:600}
 .d.off{color:var(--off)}
 .d.today{border-color:var(--ink-3);font-weight:600}
 .d.today::after{
-  content:"오늘";position:absolute;bottom:3px;left:0;right:0;
+  content:"오늘";position:absolute;bottom:2px;left:0;right:0;
   font-size:11px;font-weight:400;color:var(--ink-3);letter-spacing:-.02em;
 }
-.d.today{padding-bottom:12px}
 .d.rng{background:var(--pine-soft);border-radius:0}
 .d.sel{background:var(--pine);color:#fff;font-weight:600;border-radius:11px}
 .d.sel.a{border-radius:11px 0 0 11px}
@@ -162,16 +161,15 @@ header p.lede b{color:var(--ink);font-weight:600}
 .d.sel.today::after{color:rgba(255,255,255,.75)}
 .d.rng.today::after{color:var(--pine)}
 .d.dl{background:var(--clay-soft);color:var(--clay);font-weight:600}
-.d.dl .tag{position:absolute;bottom:3px;left:0;right:0;font-size:11px;font-weight:500;
+.d.dl .tag{position:absolute;bottom:2px;left:0;right:0;font-size:11px;font-weight:500;
   color:var(--clay);letter-spacing:-.02em}
-.d.dl{padding-bottom:12px}
 .ring{
-  position:absolute;left:50%;top:1px;width:36px;height:30px;margin-left:-18px;
+  position:absolute;left:50%;top:2px;width:32px;height:26px;margin-left:-16px;
   pointer-events:none;overflow:visible;
 }
 .ring ellipse{
   fill:none;stroke:var(--clay);stroke-width:2;stroke-linecap:round;
-  stroke-dasharray:92;stroke-dashoffset:92;animation:draw .5s ease .05s forwards;
+  stroke-dasharray:82;stroke-dashoffset:82;animation:draw .5s ease .05s forwards;
 }
 @keyframes draw{to{stroke-dashoffset:0}}
 @media(prefers-reduced-motion:reduce){.ring ellipse{animation:none;stroke-dashoffset:0}}
@@ -1226,7 +1224,7 @@ function paint(){
       el.className = c + " dl";
       el.insertAdjacentHTML("beforeend",
         '<span class="tag">마감</span>' +
-        '<svg class="ring" viewBox="0 0 36 30" aria-hidden="true"><ellipse cx="18" cy="15" rx="15" ry="12" transform="rotate(-8 18 15)"/></svg>');
+        '<svg class="ring" viewBox="0 0 32 26" aria-hidden="true"><ellipse cx="16" cy="13" rx="14" ry="11" transform="rotate(-8 16 13)"/></svg>');
     }
   });
 }
