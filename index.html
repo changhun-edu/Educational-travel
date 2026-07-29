@@ -288,7 +288,8 @@ p.flabel{font-size:12px;color:var(--ink-2);font-weight:500;margin:24px 0 8px}
 .scope b button{background:none;border:none;color:var(--paper);font-size:17px;line-height:1;
   cursor:pointer;padding:0 4px;min-height:26px}
 .demo{background:var(--answer);border-radius:14px;padding:16px;margin-top:24px;
-  box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  box-shadow:0 1px 2px rgba(0,0,0,.05);text-align:left}
+.demo p{text-align:left}
 .demo .k{font-size:12px;color:var(--ink-3);margin:0}
 .demo .k b{display:inline-block;background:var(--clay);color:#fff;font-size:11px;font-weight:600;
   border-radius:4px;padding:2px 6px;margin-right:8px;letter-spacing:.02em}
@@ -471,13 +472,7 @@ p.range{font-size:12px;color:var(--ink-3);margin:4px 0 0;letter-spacing:.01em}
   <p class="src" id="pickHint"></p>
   <div class="hits" id="hits"></div>
 
-  <div class="demo">
-    <p class="k"><b>예시</b> 10월 12일(월)에 다녀오려면</p>
-    <p class="v">10월 2일(금)까지 제출</p>
-    <p class="d">‘3일 전’인데 달력으로는 <b>열흘 전</b>입니다.
-      개천절 대체휴일과 한글날이 사이에 끼어 있거든요.<br>
-      여기에 학교 방학과 재량휴업일까지 겹치면 더 앞당겨집니다.</p>
-  </div>
+  <div class="demo" id="demo" hidden></div>
 
   <details class="fold" id="offWrap" open>
     <summary>지역으로 찾기</summary>
@@ -868,6 +863,7 @@ function skel(box, cls, n){
 function toggleIntro(hide){
   Array.prototype.forEach.call(document.querySelectorAll("#pick .demo, #pick .fold"), function(el){
     if (el.id === "offWrap") return;          /* 지역 영역은 별도로 다룬다 */
+    if (el.id === "demo" && !el.innerHTML) return;
     el.hidden = !!hide;
   });
 }
@@ -884,12 +880,26 @@ function renderOffices(){
       b.disabled = true;
       var ok = await loadOffice(b.dataset.off);
       b.disabled = false;
-      if (!ok){ toast(b.querySelector("b").textContent + " 자료가 아직 준비되지 않았어요"); return; }
-      SCOPE = b.dataset.off;
-      renderScope();
-      $("q").value = ""; renderHits(); $("q").focus();
+      if (!ok){ toast(b.textContent.trim() + " 자료가 아직 준비되지 않았어요"); return; }
+      setScope(b.dataset.off, true);
+      $("q").focus();
     };
   });
+}
+
+/* 지역 선택은 화면이 바뀌는 일이므로 히스토리에 남긴다.
+   그래야 뒤로가기가 사이트를 벗어나지 않고 지역 목록으로 돌아온다. */
+function setScope(code, push){
+  SCOPE = code || "";
+  var st = {v:"pick"};
+  if (SCOPE) st.scope = SCOPE;
+  try{
+    if (push) history.pushState(st, "", cleanHref());
+    else history.replaceState(st, "", cleanHref());
+  }catch(e){}
+  renderScope();
+  $("q").value = "";
+  renderHits();
 }
 
 function renderScope(){
@@ -899,7 +909,8 @@ function renderScope(){
   el.hidden = false;
   el.innerHTML = "<b>" + esc(shortName(o)) + ' 안에서 찾는 중<button aria-label="지역 해제">&times;</button></b>';
   el.querySelector("button").onclick = function(){
-    SCOPE = ""; renderScope(); renderHits();
+    if (history.state && history.state.scope) history.back();
+    else setScope("", false);
   };
 }
 
@@ -1025,6 +1036,70 @@ function countSchool(a,b){
   var n = 0, d = a, guard = 0;
   while (d.getTime() <= b.getTime() && guard++ < 500){ if (isSchool(d)) n++; d = addDays(d,1); }
   return n;
+}
+
+/* ---------- 첫 화면 예시 ----------
+   해마다 직접 고쳐야 하는 예시를 없앤다. 그 학년도에서 '3일 전' 규칙이
+   달력상 가장 크게 벌어지는 날을 스스로 찾아 보여준다.
+   학교별 휴업일은 빼고 계산하므로 어느 학교에나 맞는 예시가 된다. */
+function josa(w, withB, without){
+  var c = w.charCodeAt(w.length - 1) - 0xAC00;
+  return (c >= 0 && c < 11172 && c % 28 !== 0) ? withB : without;
+}
+
+function gapNames(dl, st){
+  var out = [], x = addDays(dl, 1);
+  while (x.getTime() < st.getTime()){
+    var n = holidayName(key(x));
+    if (n && out.indexOf(n) < 0) out.push(n);
+    x = addDays(x, 1);
+  }
+  return out;
+}
+
+function pickDemo(){
+  var sy = schoolYear(today());
+  var keepV = cfg.vac, keepC = cfg.clo;
+  cfg.vac = []; cfg.clo = [];                 /* 어느 학교에나 공통인 조건으로 */
+  var best = null, d = new Date(sy, 2, 1), end = new Date(sy + 1, 1, 28), guard = 0;
+  while (d.getTime() <= end.getTime() && guard++ < 400){
+    if (isSchool(d)){
+      var dl = deadlineFor(d);
+      if (dl){
+        var gap = Math.round((d - dl) / 86400000);
+        var ns = gapNames(dl, d), mo = d.getMonth() + 1;
+        /* 방학이 많은 달은 예시로 부적절하니 감점 */
+        var score = gap * 10 + ns.length * 3 - ([1,2,7,8].indexOf(mo) >= 0 ? 40 : 0);
+        if (!best || score > best.score)
+          best = {start:new Date(d), dl:new Date(dl), gap:gap, ns:ns, score:score};
+      }
+    }
+    d = addDays(d, 1);
+  }
+  cfg.vac = keepV; cfg.clo = keepC;
+  return best;
+}
+
+function renderDemo(){
+  var box = $("demo"); if (!box) return;
+  var b = pickDemo();
+  if (!b || b.gap < 5){ box.hidden = true; return; }
+
+  var list = "";
+  if (b.ns.length === 1) list = b.ns[0] + josa(b.ns[0], "이", "가");
+  else if (b.ns.length === 2) list = b.ns[0] + josa(b.ns[0], "과", "와") + " " + b.ns[1] + josa(b.ns[1], "이", "가");
+  else if (b.ns.length > 2){
+    var last = b.ns[b.ns.length - 1];
+    list = b.ns.slice(0, -1).join(", ") + ", " + last + josa(last, "이", "가");
+  }
+
+  box.innerHTML =
+    '<p class="k"><b>예시</b> ' + fmt(b.start) + "에 다녀오려면</p>" +
+    '<p class="v">' + fmt(b.dl) + "까지 제출</p>" +
+    '<p class="d">‘' + cfg.lead + "일 전’인데 달력으로는 <b>" + b.gap + "일 전</b>입니다." +
+    (list ? " " + esc(list) + " 사이에 끼어 있거든요." : "") +
+    "<br>학교 방학과 재량휴업일까지 겹치면 더 앞당겨집니다.</p>";
+  box.hidden = false;
 }
 
 /* ---------- 월 이동 바 ----------
@@ -1643,7 +1718,7 @@ function paintView(v){
       $("source").innerHTML = "학사일정 출처: 나이스 교육정보 개방 포털 · " +
         esc(IDX.fetched || "") + " 기준 · " + IDX.sy + "학년도 " + n.toLocaleString() + "개교";
     }
-    renderScope(); renderOffices(); renderHits(); screen("pick");
+    renderDemo(); renderScope(); renderOffices(); renderHits(); screen("pick");
   }
   else if (v === "cal"){ screen("cal-edit"); }
   else if (v === "admin"){ screen("admin"); }
@@ -1651,8 +1726,13 @@ function paintView(v){
 }
 
 window.addEventListener("popstate", function(e){
-  var v = (e.state && e.state.v) || (cfg.sc || cfg.locked ? "app" : "pick");
+  var st = e.state || {};
+  var v = st.v || (cfg.sc || cfg.locked ? "app" : "pick");
   VIEW = v;
+  if (v === "pick"){
+    SCOPE = st.scope || "";
+    if ($("q")) $("q").value = "";
+  }
   paintView(v);
 });
 function chips(box, arr, kind, after){
@@ -1681,7 +1761,7 @@ async function boot(){
 
   /* 설정 링크(?s=)가 있으면 그대로. 아니면 학교 목록을 찾아본다. */
   $("q").addEventListener("input", function(){ renderHits(); });
-  $("skipPick").onclick = function(){ cfg.quality = ""; startApp(); };
+  $("skipPick").onclick = function(){ cfg.quality = ""; startApp(true); };
 
   if (!cfg.locked && !wantsAdmin){
     IDX = await getJSON(DATA + "index.json");
