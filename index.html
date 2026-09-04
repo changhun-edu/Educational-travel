@@ -624,6 +624,32 @@ p.range{font-size:12px;color:var(--ink-3);margin:4px 0 0;letter-spacing:.01em}
 (function(){
 "use strict";
 
+/* ================= 주소창 해시 차단 =================
+   이 앱은 화면 전환을 history.state 로만 다루고 주소에 해시(#)를 쓰지 않는다.
+   그래도 즐겨찾기·외부 링크·브라우저 복원·확장 프로그램으로 해시가 붙어 들어올 수
+   있으므로, 스크립트가 읽히는 즉시 감시를 시작해 붙는 족족 떼어낸다.
+   데이터를 기다리는 동안(await) 해시가 남는 일을 막으려고 boot() 보다 앞에 둔다. */
+function cleanHref(){
+  try{
+    var u = new URL(location.href);
+    u.hash = "";                     /* 해시는 남기지 않는다 */
+    return u.pathname + u.search;
+  }catch(e){ return location.pathname + location.search; }
+}
+
+/* history.state 는 그대로 두어 화면 기록이 끊기지 않게 한다. */
+function stripHash(){
+  if (!location.hash) return;
+  try{ history.replaceState(history.state, "", cleanHref()); }catch(e){}
+}
+
+/* 즉시 지우기 전에 처음 들어온 해시는 남겨 둔다. 예전 #admin 링크를 살리기 위해서다. */
+var INIT_HASH = location.hash;
+stripHash();
+window.addEventListener("hashchange", stripHash);
+window.addEventListener("popstate", stripHash);
+window.addEventListener("pageshow", stripHash);   /* 뒤로가기 캐시로 복원될 때 */
+
 /* ================= 공휴일 (규칙 생성) ================= */
 var FIXED = [
   ["01-01","신정",false], ["03-01","삼일절",true], ["05-01","노동절",true],
@@ -1687,19 +1713,7 @@ function buildPrint(dl, report, used){
    이전 화면으로 돌아간다. 주소에 해시(#)는 쓰지 않는다. */
 var VIEW = "app", WANTS_ADMIN = false;
 
-function cleanHref(){
-  var u = new URL(location.href);
-  u.hash = "";                       /* 해시는 남기지 않는다 */
-  return u.pathname + u.search;
-}
-
-/* 주소에 해시가 붙으면 즉시 떼어낸다.
-   이 앱은 해시를 쓰지 않지만, 즐겨찾기·외부 링크·브라우저 복원으로 들어올 수 있다.
-   history.state 는 그대로 두어 화면 기록이 끊기지 않게 한다. */
-function stripHash(){
-  if (!location.hash) return;
-  try{ history.replaceState(history.state, "", cleanHref()); }catch(e){}
-}
+/* cleanHref() · stripHash() 는 스크립트 맨 앞에 정의해 두었다. */
 
 function screen(which){
   ["app","pick","cal-edit","admin"].forEach(function(id){ $(id).style.display = (id === which) ? "" : "none"; });
@@ -1760,8 +1774,7 @@ async function boot(){
 
   var params0 = new URLSearchParams(location.search);
   var wantsAdmin = params0.get("admin") === "1";
-  if (location.hash === "#admin") wantsAdmin = true;   /* 예전 링크도 받아준다 */
-  stripHash();
+  if (/^#\/?admin$/i.test(INIT_HASH)) wantsAdmin = true;   /* 예전 해시 링크도 받아준다 */
   WANTS_ADMIN = wantsAdmin;
 
   /* 설정 링크(?s=)가 있으면 그대로. 아니면 학교 목록을 찾아본다. */
@@ -1827,7 +1840,6 @@ function wire(){
   };
   window.addEventListener("scroll", updateBarBtn, {passive:true});
   window.addEventListener("scroll", markJump, {passive:true});
-  window.addEventListener("hashchange", stripHash);
   window.addEventListener("resize", updateBarBtn, {passive:true});
   $("detail").addEventListener("input", judge);
 
