@@ -357,6 +357,43 @@ p.range{font-size:12px;color:var(--ink-3);margin:4px 0 0;letter-spacing:.01em}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 
 #print{display:none}
+
+/* ---------- 오픈소스 라이선스 ---------- */
+#lic-btn{
+  position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:25;
+  font:inherit;font-size:12px;color:var(--ink-2);background:var(--card);
+  border:1px solid var(--line);border-radius:999px;padding:0 14px;min-height:40px;
+  cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.08);letter-spacing:-.01em;
+}
+/* 결과 화면에서는 아래 고정 막대 위로 띄운다. 오른쪽 끝은 토요일 칸이라 가려도 고를 날이 없다. */
+#lic-btn.up{bottom:calc(var(--bar) + 12px + env(safe-area-inset-bottom))}
+#lic{
+  border:none;border-radius:16px;padding:0;margin:auto;
+  width:min(560px, calc(100vw - 32px));max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px);
+  background:var(--card);color:var(--ink);box-shadow:0 8px 32px rgba(0,0,0,.25);
+}
+#lic::backdrop{background:rgba(0,0,0,.45)}
+#lic .lh{position:sticky;top:0;background:var(--card);display:flex;align-items:center;
+  padding:16px 16px 12px 20px;border-bottom:1px solid var(--line);z-index:1}
+#lic .lh h2{flex:1;margin:0;font-size:17px;font-weight:600}
+#lic .lh button{background:none;border:none;font:inherit;font-size:22px;line-height:1;color:var(--ink-2);
+  cursor:pointer;min-width:44px;min-height:44px;border-radius:10px}
+#lic .lb{padding:4px 20px 24px;font-size:13px;color:var(--ink-2);line-height:1.7}
+#lic h3{font-size:13px;font-weight:600;color:var(--ink);margin:20px 0 6px}
+#lic p{margin:0 0 6px}
+#lic ul{margin:0;padding:0 0 0 18px}
+#lic li{margin:0 0 6px}
+#lic li b{color:var(--ink);font-weight:600}
+#lic .lic-item{background:var(--press);border-radius:10px;padding:12px 14px}
+#lic .lic-item p{margin:0}
+#lic .lic-item .n{font-weight:600;color:var(--ink)}
+#lic .lic-item .m{font-size:12px;color:var(--ink-3);word-break:break-all}
+#lic pre{white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:11px;line-height:1.55;background:var(--press);color:var(--ink-2);
+  border-radius:10px;padding:12px 14px;margin:8px 0 0}
+#lic details{margin-top:8px}
+#lic a{color:var(--pine)}
+
 @media (min-width:760px){
   .wrap{max-width:560px}
   /* 교사가 PC 로 여는 화면은 좁은 띠로 두지 않는다 */
@@ -376,7 +413,7 @@ p.range{font-size:12px;color:var(--ink-3);margin:4px 0 0;letter-spacing:.01em}
 
 @media print{
   body{background:#fff}
-  .wrap,#bar,#toast{display:none}
+  .wrap,#bar,#toast,#lic-btn,#lic{display:none !important}
   #print{display:block;font-size:12px;color:#000;padding:16px}
   #print h2{font-family:var(--serif);text-align:center;font-size:17px;margin:0 0 12px}
   #print table{width:100%;border-collapse:collapse}
@@ -451,6 +488,7 @@ p.range{font-size:12px;color:var(--ink-3);margin:4px 0 0;letter-spacing:.01em}
 
     <div class="foot">
       <p>계산 결과는 참고용입니다. 허가 여부와 출석 인정은 학교(원)장의 결재로 정해지며,<br>신청 기한은 학교 규정에 따라 다를 수 있습니다.</p>
+      <p style="margin-top:8px">안내 내용 출처: 광주광역시교육청 「2026학년도 학교(원)장 허가 교외체험학습 운영 요령」(2026.2.)<br>이 사이트는 교육청이나 나이스의 공식 서비스가 아닙니다.</p>
     </div>
   </div>
 
@@ -498,7 +536,8 @@ p.range{font-size:12px;color:var(--ink-3);margin:4px 0 0;letter-spacing:.01em}
     <details class="fold law">
       <summary>법령 근거</summary>
       <p>초·중등교육법 시행령 제48조 제5항 · 유아교육법 시행령 제12조 제2항<br>
-        학교생활기록 작성 및 관리지침(교육부 훈령 제555호)</p>
+        학교생활기록 작성 및 관리지침(교육부 훈령 제555호)<br>
+        안내 내용 출처: 광주광역시교육청 「2026학년도 학교(원)장 허가 교외체험학습 운영 요령」(2026.2.)</p>
     </details>
     <p><button class="plain" id="skipPick">학교가 목록에 없어요</button></p>
     <p class="credit">만든이 2026 최창훈</p>
@@ -619,6 +658,135 @@ p.range{font-size:12px;color:var(--ink-3);margin:4px 0 0;letter-spacing:.01em}
 
 <div id="print"></div>
 <div id="toast" role="status" aria-live="polite"></div>
+
+<button type="button" id="lic-btn" aria-haspopup="dialog">ⓘ 오픈소스 라이선스</button>
+<dialog id="lic" aria-labelledby="lic-title">
+  <div class="lh">
+    <h2 id="lic-title">오픈소스 라이선스 · 저작권</h2>
+    <button type="button" id="lic-close" aria-label="닫기">&times;</button>
+  </div>
+  <div class="lb">
+    <h3>이 사이트</h3>
+    <p>기획·문구·화면 디자인·프로그램 코드: © 2026 최창훈. 아이콘(파비콘, 마감일 동그라미, 검색 돋보기)은 직접 그린 SVG·CSS이며, 이모지나 외부 아이콘 세트는 쓰지 않았습니다.</p>
+
+    <h3>사용한 오픈소스</h3>
+    <div class="lic-item">
+      <p class="n">Gowun Batang (고운바탕) 글꼴</p>
+      <p>SIL Open Font License 1.1</p>
+      <p class="m">Copyright 2021 The Gowun Batang Project Authors<br>https://github.com/yangheeryu/Gowun-Batang · Google Fonts에서 불러옴</p>
+    </div>
+    <p style="margin-top:8px">본문 글꼴(Apple SD Gothic Neo, 맑은 고딕, Noto Sans KR 등)은 방문자의 기기에 이미 설치된 글꼴을 그대로 쓰며, 이 사이트가 글꼴 파일을 배포하지 않습니다. 그 밖의 외부 라이브러리는 쓰지 않았습니다.</p>
+
+    <h3>자료 출처</h3>
+    <ul>
+      <li><b>학교 목록·학사일정</b>: 교육부 나이스 교육정보 개방 포털(open.neis.go.kr) Open API — 이용허락범위 제한 없음</li>
+      <li><b>안내 내용</b>: 광주광역시교육청 「2026학년도 학교(원)장 허가 교외체험학습 운영 요령」(2026.2.) — 저작권법 제24조의2에 따른 공공저작물</li>
+      <li><b>법령 근거</b>: 초·중등교육법 시행령 제48조 제5항, 유아교육법 시행령 제12조 제2항, 학교생활기록 작성 및 관리지침(교육부 훈령)</li>
+      <li><b>공휴일·음력 명절 날짜</b>: 사실 정보로 규칙에 따라 계산하며, 음력 명절은 우주항공청 월력요항과 대조함</li>
+    </ul>
+
+    <h3>상표 표시</h3>
+    <p>‘나이스(NEIS)’, ‘KERIS’는 해당 기관의 명칭입니다. 이 사이트는 교육청이나 나이스의 공식 서비스가 아니며, 신청 경로를 안내하려고 이름을 적었습니다.</p>
+
+    <h3>SIL Open Font License 1.1 전문</h3>
+    <details>
+      <summary>펼쳐 보기</summary>
+<pre>Copyright 2021 The Gowun Batang Project Authors (https://github.com/yangheeryu/Gowun-Batang)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION &amp; CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
+    </details>
+  </div>
+</dialog>
 
 <script>
 (function(){
@@ -1719,6 +1887,7 @@ function screen(which){
   ["app","pick","cal-edit","admin"].forEach(function(id){ $(id).style.display = (id === which) ? "" : "none"; });
   $("bar").style.display = (which === "app") ? "" : "none";
   $("jump").style.display = (which === "app") ? "" : "none";
+  $("lic-btn").classList.toggle("up", which === "app");
   window.scrollTo(0,0);
 }
 
@@ -1768,7 +1937,25 @@ function chips(box, arr, kind, after){
   });
 }
 
+/* 오픈소스 라이선스 창. 화면 기록(history)에는 남기지 않는다. */
+function initLic(){
+  var dlg = $("lic"), btn = $("lic-btn");
+  function open(){
+    if (typeof dlg.showModal === "function") dlg.showModal();
+    else dlg.setAttribute("open", "");
+  }
+  function close(){
+    if (typeof dlg.close === "function") dlg.close();
+    else dlg.removeAttribute("open");
+    btn.focus();
+  }
+  btn.onclick = open;
+  $("lic-close").onclick = close;
+  dlg.addEventListener("click", function(e){ if (e.target === dlg) close(); });   /* 바깥 누르면 닫기 */
+}
+
 async function boot(){
+  initLic();
   load();
   $("until").textContent = LUNAR_UNTIL + "년";
 
