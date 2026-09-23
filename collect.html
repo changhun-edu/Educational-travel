@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<!-- © 2026 최창훈. 학교장 허가 교외체험학습 신청 기한 계산 — 학사일정 수집기
+     학사일정 자료: 교육부 나이스 교육정보 개방 포털(open.neis.go.kr) Open API -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -123,6 +125,7 @@ pre{background:#1F2429;color:#D9E2EA;font:12px/1.6 var(--mono);padding:13px;bord
     <h2>리포트</h2>
     <pre id="report"></pre>
   </div>
+  <p class="muted" style="text-align:center;margin-top:24px">학사일정 자료: 교육부 나이스 교육정보 개방 포털 · 만든이 2026 최창훈</p>
 </div>
 
 <script>
@@ -444,7 +447,7 @@ function renderResults(){
   reportText = L.join("\n");
   $("report").textContent = reportText;
   $("repPanel").style.display = "";
-  $("layout").textContent = "내려받은 파일을 앱 옆에 이렇게 두세요\n\n  교외체험학습_신청도우미.html\n  data/\n   ├─ index.json\n" +
+  $("layout").textContent = "내려받은 파일을 앱 옆에 이렇게 두세요\n\n  index.html\n  data/\n   ├─ index.json\n" +
     offices.map(function(o){ return "   ├─ idx/" + o.code + ".json"; }).join("\n") + "\n" +
     offices.map(function(o){ return "   ├─ cal/" + o.code + ".json"; }).join("\n");
   window._offices = offices;
