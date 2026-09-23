@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# © 2026 최창훈. 학교장 허가 교외체험학습 신청 기한 계산 — 학사일정 수집기
 """
 나이스 학사일정 수집기
 
 교육청 단위로 학교 목록과 학사일정을 받아, 학부모 앱이 바로 읽는 정적 JSON을 만든다.
 인증키는 이 과정에서만 쓰이고 결과물에는 남지 않는다.
+학사일정 자료: 교육부 나이스 교육정보 개방 포털(open.neis.go.kr) Open API
 
   export NEIS_KEY=발급받은키
   python3 collect.py --office F10 --year 2026
 
-만들어지는 것
-  dist/schools.json            학교 목록 (검색용)
-  dist/cal/F10_7402220.json    학교별 휴업일
-  dist/report.txt              품질 분포와 경고
+만들어지는 것 (dist 폴더를 그대로 앱 옆의 data 폴더로 올린다)
+  dist/index.json          교육청 목록·학교 수·수집 날짜
+  dist/idx/F10.json        교육청별 학교 목록 (검색용)
+  dist/cal/F10.json        교육청별 학교 휴업일 (방학·재량휴업일)
+  dist/report.txt          품질 분포와 경고 (올리지 않아도 된다)
 
 자동 검증
   - 학년도 수업일수가 190일(초등학교 법정 기준)에서 크게 벗어나면 경고.
